@@ -432,6 +432,18 @@ CreateButton(MainPage, "Killbot V2", function()
     end)
 end)
 
+CreateButton(MainPage, "Split", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Split-head-/refs/heads/main/Split%20head"))()
+    end)
+end)
+
+CreateButton(MainPage, "Sans", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Sans/refs/heads/main/Sans"))()
+    end)
+end)
+
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
