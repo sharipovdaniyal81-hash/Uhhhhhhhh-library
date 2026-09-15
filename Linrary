@@ -22,8 +22,9 @@ function Util.LinkDestroyI2C(a, b)
     a.Destroying:Once(function() b:Disconnect() end)
 end
 
-if PlayerGui:FindFirstChild("UhhhhhhhLibrary") then
-    PlayerGui.UhhhhhhhLibrary:Destroy()
+for _, name in ipairs({"UhhhhhhhLibrary", "UhhhhhhhLibrary_Prev", "UhhhhhhLibrary"}) do
+    local old = PlayerGui:FindFirstChild(name)
+    if old then old:Destroy() end
 end
 
 local SCREENGUI = Util.Instance("ScreenGui", gethui())
@@ -214,7 +215,7 @@ local UIMainWindow = Util.Instance("Frame", UIMainFrame)
 UIMainWindow.Active = true
 UIMainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 UIMainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-UIMainWindow.Size = UDim2.new(0, 360, 0, 240)
+UIMainWindow.Size = UDim2.new(0, 360, 0, 280)
 UIMainWindow.BackgroundColor3 = Color3.new(1, 1, 1)
 UIMainWindow.BorderSizePixel = 0
 UIMainWindow.Visible = false
@@ -313,7 +314,7 @@ TopBarClose.Activated:Connect(function()
         MiniText.Visible = false
         WindowContent.Visible = true
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 240)
+            Size = UDim2.fromOffset(360, 280)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 0
@@ -330,7 +331,7 @@ end)
 local MainPage = Util.Instance("ScrollingFrame", WindowContent)
 MainPage.AnchorPoint = Vector2.new(0.5, 0.5)
 MainPage.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainPage.Size = UDim2.new(0, 360, 0, 205)
+MainPage.Size = UDim2.new(0, 360, 0, 245)
 MainPage.BackgroundColor3 = Color3.new(0, 0, 0)
 MainPage.BorderSizePixel = 1
 MainPage.BorderColor3 = Color3.new(1, 1, 1)
@@ -355,13 +356,15 @@ UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIList.VerticalAlignment   = Enum.VerticalAlignment.Top
 UIList.Padding             = UDim.new(0, 6)
 
+local buttonOrder = 0
 local function CreateButton(parent, text, callback)
+    buttonOrder += 1
     local margin = 5
     local Container = Util.Instance("Frame", parent)
     Container.AnchorPoint = Vector2.new(0.5, 0)
     Container.Size = UDim2.new(1, 0, 0, 36)
     Container.BackgroundTransparency = 1
-    Container.LayoutOrder = #parent:GetChildren()
+    Container.LayoutOrder = buttonOrder
 
     local Button = Util.Instance("TextButton", Container)
     Button.Position = UDim2.new(0, margin, 0, margin // 2)
@@ -633,7 +636,7 @@ clickConn = CracktroFrame.InputEnded:Connect(function(input)
         UIMainWindow.Visible = true
         UIMainWindow.Size = UDim2.fromOffset(0, 0)
         TweenService:Create(UIMainWindow, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 240),
+            Size = UDim2.fromOffset(360, 280),
         }):Play()
 
         tween.Completed:Connect(function()
