@@ -355,10 +355,24 @@ UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIList.VerticalAlignment   = Enum.VerticalAlignment.Top
 UIList.Padding             = UDim.new(0, 4)
 
+local function CreateSeparator(parent, layoutOrder)
+    local Sep = Util.Instance("Frame", parent)
+    Sep.AnchorPoint = Vector2.new(0.5, 0)
+    Sep.Size = UDim2.new(1, -20, 0, 1)
+    Sep.BackgroundColor3 = UITextColor.Value
+    Sep.BackgroundTransparency = 0.5
+    Sep.BorderSizePixel = 0
+    Sep.LayoutOrder = layoutOrder or #parent:GetChildren()
+    Util.LinkDestroyI2C(Sep, UITextColor.Changed:Connect(function(val)
+        Sep.BackgroundColor3 = val
+    end))
+    return Sep
+end
+
 local function CreateSection(parent, text, layoutOrder)
     local Container = Util.Instance("Frame", parent)
     Container.AnchorPoint = Vector2.new(0.5, 0)
-    Container.Size = UDim2.new(1, 0, 0, 26)
+    Container.Size = UDim2.new(1, 0, 0, 30)
     Container.BackgroundTransparency = 1
     Container.LayoutOrder = layoutOrder or #parent:GetChildren()
 
@@ -373,7 +387,7 @@ local function CreateSection(parent, text, layoutOrder)
     T.TextYAlignment = Enum.TextYAlignment.Center
     T.Text = text
     RegisterTextLabel(T)
-    return T
+    return Container
 end
 
 local function CreateButton(parent, text, callback, layoutOrder)
@@ -414,7 +428,8 @@ local function CreateButton(parent, text, callback, layoutOrder)
     return Button, ButtonText
 end
 
-CreateSection(MainPage, "Morphs", 1)
+CreateSeparator(MainPage, 1)
+CreateSection(MainPage, "Morphs", 2)
 CreateButton(MainPage, "Chronos Sentinel", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)")
@@ -422,7 +437,7 @@ CreateButton(MainPage, "Chronos Sentinel", function()
         if fn then fn() end
     end)
     if not ok then warn("[Uhhhhhhh] Chronos Sentinel error:", err) end
-end, 2)
+end, 3)
 CreateButton(MainPage, "All Seeing Hand", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/All-Seeing-Hand-/refs/heads/main/Hand")
@@ -430,7 +445,7 @@ CreateButton(MainPage, "All Seeing Hand", function()
         if fn then fn() end
     end)
     if not ok then warn("[Uhhhhhhh] All Seeing Hand error:", err) end
-end, 3)
+end, 4)
 
 local dragref = nil
 local offset  = Vector2.new(0, 0)
@@ -476,12 +491,6 @@ UserInputService.InputChanged:Connect(function(input)
         local screen = workspace.CurrentCamera.ViewportSize
         local ch = Vector2.new(input.Position.X, input.Position.Y) / screen
         local pos = ch + offset
-        local half = UIMainWindow.AbsoluteSize / 2
-        local minX = half.X / screen.X
-        local maxX = 1 - minX
-        local minY = half.Y / screen.Y
-        local maxY = 1 - minY
-        pos = Vector2.new(math.clamp(pos.X, minX, maxX), math.clamp(pos.Y, minY, maxY))
         UIMainWindow.Position = UDim2.fromScale(pos.X, pos.Y)
     end
 end)
