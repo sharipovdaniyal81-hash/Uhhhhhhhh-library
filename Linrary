@@ -404,6 +404,15 @@ CreateButton(MainPage, "Chronos Sentinel", function()
     if not ok then warn("[Uhhhhhhh] Chronos Sentinel error:", err) end
 end, false, 2)
 
+CreateButton(MainPage, "All Seeing Hand", function()
+    local ok, err = pcall(function()
+        local src = game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/All-Seeing-Hand-/refs/heads/main/Hand")
+        local fn = loadstring(src)
+        if fn then fn() end
+    end)
+    if not ok then warn("[Uhhhhhhh] All Seeing Hand error:", err) end
+end, false, 3)
+
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
