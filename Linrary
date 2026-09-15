@@ -215,7 +215,7 @@ local UIMainWindow = Util.Instance("Frame", UIMainFrame)
 UIMainWindow.Active = true
 UIMainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 UIMainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-UIMainWindow.Size = UDim2.new(0, 360, 0, 320)
+UIMainWindow.Size = UDim2.new(0, 360, 0, 360)
 UIMainWindow.BackgroundColor3 = Color3.new(1, 1, 1)
 UIMainWindow.BorderSizePixel = 0
 UIMainWindow.Visible = false
@@ -314,7 +314,7 @@ TopBarClose.Activated:Connect(function()
         MiniText.Visible = false
         WindowContent.Visible = true
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 320)
+            Size = UDim2.fromOffset(360, 360)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 0
@@ -331,7 +331,7 @@ end)
 local MainPage = Util.Instance("ScrollingFrame", WindowContent)
 MainPage.AnchorPoint = Vector2.new(0.5, 0.5)
 MainPage.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainPage.Size = UDim2.new(0, 360, 0, 285)
+MainPage.Size = UDim2.new(0, 360, 0, 325)
 MainPage.BackgroundColor3 = Color3.new(0, 0, 0)
 MainPage.BorderSizePixel = 1
 MainPage.BorderColor3 = Color3.new(1, 1, 1)
@@ -430,6 +430,15 @@ CreateButton(MainPage, "Lunatic", function()
         if fn then fn() end
     end)
     if not ok then warn("[Uhhhhhhh] Lunatic error:", err) end
+end)
+
+CreateButton(MainPage, "Shrike", function()
+    local ok, err = pcall(function()
+        local src = game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/Shrike")
+        local fn = loadstring(src)
+        if fn then fn() end
+    end)
+    if not ok then warn("[Uhhhhhhh] Shrike error:", err) end
 end)
 
 local dragref = nil
@@ -645,7 +654,7 @@ clickConn = CracktroFrame.InputEnded:Connect(function(input)
         UIMainWindow.Visible = true
         UIMainWindow.Size = UDim2.fromOffset(0, 0)
         TweenService:Create(UIMainWindow, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 320),
+            Size = UDim2.fromOffset(360, 360),
         }):Play()
 
         tween.Completed:Connect(function()
