@@ -1,317 +1,663 @@
 --[[
-    Uhhhhhhhh Library
-    Стиль как у Uhhhhhh Reanimate (modded)
-    RGB-переливание ТОЛЬКО на обводках
-    Текст всегда БЕЛЫЙ
+    Uhhhhhh Panel with Cracktro
+    Полный стиль Uhhhhhh Reanimate
+    - Крэктро с трифорсом + частицами + ASCII текстом
+    - Панель с разделом Morphs (кнопка) и Chronos Sentinel
+    - RGB-переливание всего
 ]]
 
-local UIS       = game:GetService("UserInputService")
-local Tween     = game:GetService("TweenService")
-local Run       = game:GetService("RunService")
-local Players   = game:GetService("Players")
-local Debris    = game:GetService("Debris")
-local LocalPlr  = Players.LocalPlayer
-local PlayerGui = LocalPlr:WaitForChild("PlayerGui")
+local Players          = game:GetService("Players")
+local RunService       = game:GetService("RunService")
+local TweenService     = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui          = game:GetService("CoreGui")
+local Debris           = game:GetService("Debris")
+local TextService      = game:GetService("TextService")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui   = LocalPlayer:WaitForChild("PlayerGui")
+local gethui      = gethui or get_hidden_gui or function() return CoreGui end
 
 --============================================================
--- УТИЛИТЫ
+-- UTIL
 --============================================================
-local function New(class, props)
-    local o = Instance.new(class)
-    for k, v in pairs(props or {}) do o[k] = v end
-    return o
+local Util = {}
+function Util.Instance(class, parent)
+    local i = Instance.new(class)
+    i.Name = tostring(math.random(1, 1e9))
+    i.Parent = parent
+    return i
+end
+function Util.LoopedHSV(h, s, v)
+    return Color3.fromHSV(h % 1, math.clamp(s, 0, 1), math.clamp(v, 0, 1))
+end
+function Util.LinkDestroyI2C(a, b)
+    a.Destroying:Once(function() b:Disconnect() end)
 end
 
-local function RGB(t)
-    return Color3.fromHSV((t * 0.25) % 1, 0.75, 1)
+--============================================================
+-- ScreenGui
+--============================================================
+if PlayerGui:FindFirstChild("UhhhhhhPanel") then
+    PlayerGui.UhhhhhhPanel:Destroy()
 end
 
-local Strokes = {}
+local SCREENGUI = Util.Instance("ScreenGui", gethui())
+SCREENGUI.Name = "UhhhhhhPanel"
+SCREENGUI.IgnoreGuiInset = true
+SCREENGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+SCREENGUI.ResetOnSpawn = false
+SCREENGUI.ScreenInsets = Enum.ScreenInsets.None
+SCREENGUI.DisplayOrder = 2147483647
 
-local function RegisterStroke(stroke)
-    table.insert(Strokes, stroke)
+local UIMainFrame = Util.Instance("Frame", SCREENGUI)
+UIMainFrame.Size = UDim2.new(1, 0, 1, 0)
+UIMainFrame.BackgroundTransparency = 1
+UIMainFrame.BorderSizePixel = 0
+UIMainFrame.ZIndex = 2147483647
+
+--============================================================
+-- Цвета
+--============================================================
+local GetUIColor   = function(t) return Util.LoopedHSV(t / 10, 0.8, 1) end
+local GetUIBGColor = function(t) return Color3.new(0, 0, 0) end
+
+--============================================================
+-- Стилизация
+--============================================================
+local StylizedObjs = {}
+local function Stylize(obj, options)
+    options = options or {}
+    Util.Instance("UICorner", obj).CornerRadius = UDim.new(0, 5)
+    local Out = Util.Instance("UIStroke", obj)
+    Out.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    Out.Color           = Color3.new(1, 1, 1)
+    Out.LineJoinMode    = Enum.LineJoinMode.Round
+    Out.Thickness       = 1
+    obj.BackgroundColor3 = Color3.new(0, 0, 0)
+    obj.BorderSizePixel  = 0
+    table.insert(StylizedObjs, {obj = obj, Out = Out, options = options})
+end
+
+local UITextColor = Instance.new("Color3Value")
+UITextColor.Value = Color3.new(1, 1, 1)
+
+local function RegisterTextLabel(obj)
+    if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+        obj.TextColor3 = UITextColor.Value
+        Util.LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
+            obj.TextColor3 = val
+        end))
+    end
 end
 
 --============================================================
--- ПЕРЕЛИВАНИЕ ОБВОДОК
+-- Звук клика
 --============================================================
-local Time0 = 0
-Run.RenderStepped:Connect(function(dt)
-    Time0 += dt
-    local c = RGB(Time0)
-    for i = #Strokes, 1, -1 do
-        local s = Strokes[i]
-        if s and s.Parent then
-            s.Color = c
-        else
-            table.remove(Strokes, i)
+local ClickSound = Util.Instance("Sound", UIMainFrame)
+ClickSound.SoundId = "rbxassetid://118806752369227"
+ClickSound.Volume  = 1
+
+--============================================================
+-- ASCII TEXT
+--============================================================
+local ASCII_LOOKUP = "BCDEIKOPQRSTUVYZ\\_`N^MJ"
+local ASCII_DATA = ""
+ASCII_DATA ..= "DDDDD@DFF@@@@@FSFSFSF@@@@@@@@@@@@@@EMMUKKTDD@@@@@DEEEEEDDBBBBBD@@@@@@@@@@@@@@@@@@@DE@@@G@@@@@@@@@DABBDEEI"
+ASCII_DATA ..= "GJJJJJGDVDDDDSGJAGIISRAAGAARWJJSAAASIIRAARGIIRJJGSAABBDDGJJGJJGGJJHAAG"
+ASCII_DATA ..= "@DD@DD@@DD@DE@@BDEDB@@@G@G@@@EDBDE@GJABD@D@@@@@@@"
+ASCII_DATA ..= "DFJSJJJRJJRJJRGJIIIJGRJJJJJRSIIRIISSIIRIIIHIILJJHJJJSJJJGDDDDDGAAAAAJHJKMOMKJIIIIIISJQNJJJJJJPNLJJGJJJJJGRJJRIIIGJJJNGCRJJRMKJGJIGAJGSDDDDDDJJJJJJGJJJJJFDJJJNQJJJJFDFJJJJFDDDDSABDEIS"
+
+local function MakeText(text)
+    text = text:upper()
+    local pixs = {}
+    local totalsize = 0
+    for i = 0, 6 do
+        local row = {}
+        for j = 1, text:len() do
+            local c = text:byte(j, j)
+            local w = 0
+            if c ~= 0x20 then
+                local k = (c - 33) * 7 + i
+                w = ASCII_DATA:byte(k + 1, k + 1)
+                if w ~= nil and w > 64 then
+                    w = ASCII_LOOKUP:byte(w - 64, w - 64) - 65
+                else
+                    w = 0
+                end
+            end
+            for k = 0, 5 do
+                local h = (j - 1) * 6 + (4 - k)
+                totalsize = math.max(totalsize, h + 1)
+                local p = (w // math.pow(2, k)) % 2
+                if p > 0 then
+                    row[h] = true
+                end
+            end
         end
+        pixs[i] = row
+    end
+    local pivot = Util.Instance("Frame")
+    pivot.AnchorPoint = Vector2.new(0.5, 0.5)
+    pivot.Size = UDim2.new(0, totalsize, 0, 7)
+    pivot.BackgroundTransparency = 1
+    pivot.BorderSizePixel = 0
+    for i = 0, 6 do
+        local row = pixs[i]
+        local olde = nil
+        local olds = 0
+        for j = 0, totalsize - 1 do
+            local pix = row[j]
+            if pix == true then
+                if olde ~= nil then
+                    olds += 1
+                    olde.Size = UDim2.new(olds / totalsize, 0, 1 / 7, 0)
+                else
+                    olde = Util.Instance("Frame", pivot)
+                    olde.Position = UDim2.new(j / totalsize, 0, i / 7, 0)
+                    olde.Size = UDim2.new(1 / totalsize, 0, 1 / 7, 0)
+                    olde.BackgroundColor3 = Color3.new(1, 1, 1)
+                    olde.BorderSizePixel = 0
+                    olds = 1
+                end
+            else
+                olde = nil
+                olds = 0
+            end
+        end
+    end
+    return pivot
+end
+
+local function SetTextColor(text, color, tran)
+    for _, v in text:GetChildren() do
+        if v:IsA("Frame") then
+            v.BackgroundColor3 = color
+            v.BackgroundTransparency = tran
+        end
+    end
+end
+
+--============================================================
+-- ТРИФОРС
+--============================================================
+local function MakeTriforce(tris, color, dur)
+    dur = dur or 8
+    local function CreateTriangle(parent, radius, width, rotation, color)
+        local height = (math.sqrt(3) / 2) * width
+        local pivot = Util.Instance("Frame", parent)
+        pivot.AnchorPoint = Vector2.new(0.5, 0.5)
+        pivot.Position = UDim2.new(0.5, 0, 0.5, 0)
+        pivot.Size = UDim2.new(1, 0, 1, 0)
+        pivot.BackgroundTransparency = 1
+        pivot.BorderSizePixel = 0
+        pivot.Rotation = rotation
+
+        -- Треугольник из 3 линий
+        local tri = Util.Instance("Frame", pivot)
+        tri.AnchorPoint = Vector2.new(0.5, 1)
+        tri.Position = UDim2.new(0.5, 0, 0.5 - radius, 0)
+        tri.Size = UDim2.new(width, 0, height, 0)
+        tri.BackgroundTransparency = 1
+        tri.BorderSizePixel = 0
+
+        -- Тонкие линии треугольника (3 грани)
+        local thick = 0.06
+        local function edge(p1, p2)
+            local mx = (p1.X + p2.X) / 2
+            local my = (p1.Y + p2.Y) / 2
+            local dx = p2.X - p1.X
+            local dy = p2.Y - p1.Y
+            local len = math.sqrt(dx * dx + dy * dy)
+            local ang = math.deg(math.atan2(dy, dx))
+            local l = Util.Instance("Frame", tri)
+            l.AnchorPoint = Vector2.new(0.5, 0.5)
+            l.Position = UDim2.fromScale(mx, my)
+            l.Size = UDim2.new(len, 0, thick, 0)
+            l.Rotation = ang
+            l.BackgroundColor3 = Color3.new(0.5, 0.15, 0.15)
+            l.BorderSizePixel = 0
+            return l
+        end
+        edge(Vector2.new(0, 0), Vector2.new(0.5, 1))
+        edge(Vector2.new(0.5, 1), Vector2.new(1, 0))
+        edge(Vector2.new(1, 0), Vector2.new(0, 0))
+
+        TweenService:Create(tri, TweenInfo.new(dur, Enum.EasingStyle.Linear), {}):Play()
+    end
+    local radius = 0.1
+    local pivot = Util.Instance("Frame")
+    pivot.AnchorPoint = Vector2.new(0.5, 0.5)
+    pivot.BackgroundTransparency = 1
+    pivot.BorderSizePixel = 0
+    local width = 2 * radius * math.sin(math.pi / tris) * 2
+    for i = 1, tris do
+        CreateTriangle(pivot, radius, width, (i / tris) * 360, color)
+    end
+    return pivot
+end
+
+--============================================================
+-- Главное окно
+--============================================================
+local UIMainWindow = Util.Instance("Frame", UIMainFrame)
+UIMainWindow.Active = true
+UIMainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+UIMainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
+UIMainWindow.Size = UDim2.new(0, 360, 0, 240)
+UIMainWindow.BackgroundColor3 = Color3.new(1, 1, 1)
+UIMainWindow.BorderSizePixel = 0
+UIMainWindow.Visible = false
+Stylize(UIMainWindow, {Glow = true})
+
+local _clicksndclicked = false
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        _clicksndclicked = false
+    end
+end)
+local function _registerclicksnd(v)
+    if v:GetAttribute("ClickSnd") then return end
+    v:SetAttribute("ClickSnd", true)
+    v.InputBegan:Connect(function(input)
+        if _clicksndclicked then return end
+        if input.UserInputState ~= Enum.UserInputState.Begin then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+            ClickSound:Play()
+            _clicksndclicked = true
+        end
+    end)
+end
+_registerclicksnd(UIMainWindow)
+UIMainWindow.DescendantAdded:Connect(function(v)
+    if v:IsA("GuiObject") then _registerclicksnd(v) end
+end)
+
+-- Topbar
+local TopBarFrame = Util.Instance("Frame", UIMainWindow)
+TopBarFrame.Size = UDim2.new(1, 0, 0, 30)
+TopBarFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+TopBarFrame.BorderSizePixel = 0
+TopBarFrame.ClipsDescendants = true
+TopBarFrame.ZIndex = 1
+Stylize(TopBarFrame)
+
+local TopBarText = Util.Instance("TextLabel", TopBarFrame)
+TopBarText.AnchorPoint = Vector2.new(0, 0.5)
+TopBarText.Position = UDim2.new(0, 8, 0.5, 0)
+TopBarText.Size = UDim2.new(1, -35, 1, 0)
+TopBarText.BackgroundTransparency = 1
+TopBarText.Font = Enum.Font.Code
+TopBarText.TextSize = 20
+TopBarText.TextXAlignment = Enum.TextXAlignment.Left
+TopBarText.Text = "Uhhhhhh Reanimate (modded)"
+RegisterTextLabel(TopBarText)
+
+local TopBarClose = Util.Instance("TextButton", TopBarFrame)
+TopBarClose.AnchorPoint = Vector2.new(1, 0)
+TopBarClose.Position = UDim2.new(1, 0, 0, 0)
+TopBarClose.Size = UDim2.new(0, 30, 1, 0)
+TopBarClose.BackgroundTransparency = 1
+TopBarClose.Text = ""
+do
+    local A = Util.Instance("Frame", TopBarClose)
+    A.AnchorPoint = Vector2.new(0.5, 0.5)
+    A.Position = UDim2.new(0.5, 0, 0.5, 0)
+    A.Size = UDim2.new(0, 16, 0, 2)
+    A.BackgroundColor3 = UITextColor.Value
+    A.BorderSizePixel = 0
+    A.Name = "A"
+    local B = Util.Instance("Frame", A)
+    B.AnchorPoint = Vector2.new(0.5, 0.5)
+    B.Position = UDim2.new(0.5, 0, 0.5, 0)
+    B.Size = UDim2.new(0, 2, 0, 0)
+    B.BackgroundColor3 = UITextColor.Value
+    B.BorderSizePixel = 0
+    B.Name = "B"
+    UITextColor.Changed:Connect(function(val)
+        A.BackgroundColor3 = val
+        B.BackgroundColor3 = val
+    end)
+end
+
+local WindowContent = Util.Instance("Frame", UIMainWindow)
+WindowContent.Position = UDim2.new(0, 0, 0, 30)
+WindowContent.Size = UDim2.new(1, 0, 1, -35)
+WindowContent.BackgroundTransparency = 1
+WindowContent.ClipsDescendants = true
+
+-- Сворачивание
+local MainWindowClosed = false
+local MainWindowTweening = false
+TopBarClose.Activated:Connect(function()
+    if MainWindowTweening then return end
+    MainWindowTweening = true
+    MainWindowClosed = not MainWindowClosed
+    if MainWindowClosed then
+        TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Size = UDim2.fromOffset(112, 30)
+        }):Play()
+        TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Rotation = 180
+        }):Play()
+        TweenService:Create(TopBarClose.A.B, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 2, 0, 16)
+        }):Play()
+        task.delay(0.6, function()
+            WindowContent.Visible = false
+            MainWindowTweening = false
+        end)
+    else
+        WindowContent.Visible = true
+        TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Size = UDim2.fromOffset(360, 240)
+        }):Play()
+        TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Rotation = 0
+        }):Play()
+        TweenService:Create(TopBarClose.A.B, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 2, 0, 0)
+        }):Play()
+        task.delay(0.6, function()
+            MainWindowTweening = false
+        end)
     end
 end)
 
+-- Перетаскивание
+local dragref = nil
+local offset  = Vector2.new(0, 0)
+TopBarFrame.InputBegan:Connect(function(input)
+    if dragref then return end
+    if input.UserInputState ~= Enum.UserInputState.Begin then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        local screen = workspace.CurrentCamera.ViewportSize
+        local ch = (Vector2.new(input.Position.X, input.Position.Y) + SCREENGUI.AbsolutePosition) / screen
+        offset = Vector2.new(UIMainWindow.Position.X.Scale, UIMainWindow.Position.Y.Scale) - ch
+        dragref = input
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragref then
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+        or (input.UserInputType == Enum.UserInputType.Touch and dragref == input) then
+            local screen = workspace.CurrentCamera.ViewportSize
+            local ch = (Vector2.new(input.Position.X, input.Position.Y) + SCREENGUI.AbsolutePosition) / screen
+            UIMainWindow.Position = UDim2.fromScale((ch + offset).X, (ch + offset).Y)
+        end
+    end
+end)
+UserInputService.InputEnded:Connect(function(input)
+    if dragref and dragref == input then dragref = nil end
+end)
+
 --============================================================
--- СТИЛИЗАЦИЯ
+-- Страница
 --============================================================
-local function Stylize(obj)
-    New("UICorner", {CornerRadius = UDim.new(0, 5), Parent = obj})
-    local stroke = New("UIStroke", {
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color           = Color3.new(1, 1, 1),
-        LineJoinMode    = Enum.LineJoinMode.Round,
-        Thickness       = 1,
-        Parent          = obj,
-    })
-    obj.BackgroundColor3 = Color3.new(0, 0, 0)
-    obj.BorderSizePixel  = 0
-    RegisterStroke(stroke)
-    return stroke
-end
+local MainPage = Util.Instance("ScrollingFrame", WindowContent)
+MainPage.AnchorPoint = Vector2.new(0.5, 0.5)
+MainPage.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainPage.Size = UDim2.new(0, 360, 0, 205)
+MainPage.BackgroundColor3 = Color3.new(0, 0, 0)
+MainPage.BorderSizePixel = 1
+MainPage.BorderColor3 = Color3.new(1, 1, 1)
+MainPage.ClipsDescendants = true
+MainPage.AutomaticCanvasSize = Enum.AutomaticSize.Y
+MainPage.CanvasSize = UDim2.new(0, 0, 0, 0)
+MainPage.ScrollingDirection = Enum.ScrollingDirection.Y
+MainPage.ScrollBarThickness = 3
+MainPage.ScrollBarImageColor3 = Color3.new(1, 1, 1)
+MainPage.ScrollBarImageTransparency = 0.5
+MainPage.TopImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+MainPage.MidImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+MainPage.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 
-local function PlayClick(parent)
-    local s = New("Sound", {
-        SoundId = "rbxassetid://118806752369227",
-        Volume  = 0.6,
-        Parent  = parent or PlayerGui,
-    })
-    s:Play()
-    Debris:AddItem(s, 3)
-end
+local Padding = Util.Instance("UIPadding", MainPage)
+Padding.PaddingTop    = UDim.new(0, 5)
+Padding.PaddingBottom = UDim.new(0, 5)
+
+local UIList = Util.Instance("UIListLayout", MainPage)
+UIList.FillDirection       = Enum.FillDirection.Vertical
+UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIList.VerticalAlignment   = Enum.VerticalAlignment.Top
+UIList.Padding             = UDim.new(0, 4)
 
 --============================================================
--- ЯДРО
+-- Кнопки на странице
 --============================================================
-local Uhhhhhhhh = {}
-Uhhhhhhhh.__index = Uhhhhhhhh
+local function CreateButton(parent, text, callback, sectionStyle)
+    local margin = 5
+    local Container = Util.Instance("Frame", parent)
+    Container.AnchorPoint = Vector2.new(0.5, 0)
+    Container.Size = UDim2.new(1, 0, 0, sectionStyle and 30 or 36)
+    Container.BackgroundTransparency = 1
+    Container.LayoutOrder = #parent:GetChildren()
 
-function Uhhhhhhhh.new(config)
-    config = config or {}
-    local self = setmetatable({}, Uhhhhhhhh)
+    local Button = Util.Instance("TextButton", Container)
+    Button.Position = UDim2.new(0, margin, 0, margin // 2)
+    Button.Size = UDim2.new(1, margin * -2, 1, -margin)
+    Button.BackgroundColor3 = Color3.new(1, 1, 1)
+    Button.BorderSizePixel = 0
+    Button.Text = ""
+    Button.AutoButtonColor = true
 
-    local gui = New("ScreenGui", {
-        Name           = "UhhhhhhhhLibrary",
-        ResetOnSpawn   = false,
-        IgnoreGuiInset = true,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        Parent         = PlayerGui,
-    })
-    self.Gui = gui
+    local ButtonText = Util.Instance("TextLabel", Button)
+    ButtonText.AnchorPoint = Vector2.new(0, 0.5)
+    ButtonText.Position = UDim2.new(0, sectionStyle and 12 or 0, 0.5, 0)
+    ButtonText.Size = UDim2.new(1, sectionStyle and -24 or 0, 1, 0)
+    ButtonText.BackgroundTransparency = 1
+    ButtonText.Font = Enum.Font.Code
+    ButtonText.TextSize = sectionStyle and 15 or 18
+    ButtonText.TextXAlignment = sectionStyle and Enum.TextXAlignment.Left or Enum.TextXAlignment.Center
+    ButtonText.TextYAlignment = Enum.TextYAlignment.Center
+    ButtonText.Text = sectionStyle and ("-- " .. text .. " --") or text
+    RegisterTextLabel(ButtonText)
+    Stylize(Button)
 
-    local window = New("Frame", {
-        Name                   = "Window",
-        AnchorPoint            = Vector2.new(0.5, 0.5),
-        Position               = UDim2.new(0.5, 0, 0.5, 0),
-        Size                   = UDim2.new(0, 440, 0, 320),
-        BackgroundColor3       = Color3.new(0, 0, 0),
-        BackgroundTransparency = 0.05,
-        BorderSizePixel        = 0,
-        Active                 = true,
-        Parent                 = gui,
-    })
-    self.Window = window
-    Stylize(window)
-
-    local topbar = New("Frame", {
-        Name                   = "TopBar",
-        Size                   = UDim2.new(1, 0, 0, 32),
-        BackgroundColor3       = Color3.new(0, 0, 0),
-        BackgroundTransparency = 0,
-        BorderSizePixel        = 0,
-        ClipsDescendants       = true,
-        Parent                 = window,
-    })
-    Stylize(topbar)
-
-    New("TextLabel", {
-        Name                   = "Title",
-        Position               = UDim2.new(0, 12, 0, 0),
-        Size                   = UDim2.new(1, -50, 1, 0),
-        BackgroundTransparency = 1,
-        Font                   = Enum.Font.Code,
-        TextSize               = 20,
-        TextColor3             = Color3.new(1, 1, 1),
-        TextXAlignment         = Enum.TextXAlignment.Left,
-        Text                   = config.Title or "Uhhhhhhhh Library",
-        Parent                 = topbar,
-    })
-
-    local closeBtn = New("TextButton", {
-        Name                   = "Close",
-        AnchorPoint            = Vector2.new(1, 0),
-        Position               = UDim2.new(1, 0, 0, 0),
-        Size                   = UDim2.new(0, 32, 1, 0),
-        BackgroundTransparency = 1,
-        Text                   = "",
-        Parent                 = topbar,
-    })
-    New("Frame", {
-        AnchorPoint      = Vector2.new(0.5, 0.5),
-        Position         = UDim2.new(0.5, 0, 0.5, 0),
-        Size             = UDim2.new(0, 16, 0, 2),
-        BackgroundColor3 = Color3.new(1, 1, 1),
-        BorderSizePixel  = 0,
-        Rotation         = 45,
-        Parent           = closeBtn,
-    })
-    New("Frame", {
-        AnchorPoint      = Vector2.new(0.5, 0.5),
-        Position         = UDim2.new(0.5, 0, 0.5, 0),
-        Size             = UDim2.new(0, 16, 0, 2),
-        BackgroundColor3 = Color3.new(1, 1, 1),
-        BorderSizePixel  = 0,
-        Rotation         = -45,
-        Parent           = closeBtn,
-    })
-    closeBtn.MouseButton1Click:Connect(function()
-        PlayClick(window)
-        gui.Enabled = false
-    end)
-
-    local content = New("Frame", {
-        Name                   = "Content",
-        Position               = UDim2.new(0, 0, 0, 32),
-        Size                   = UDim2.new(1, 0, 1, -32),
-        BackgroundTransparency = 1,
-        ClipsDescendants       = true,
-        Parent                 = window,
-    })
-    self.Content = content
-
-    -- Перетаскивание
-    do
-        local dragging, dragStart, startPos
-        topbar.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1
-            or input.UserInputType == Enum.UserInputType.Touch then
-                dragging  = true
-                dragStart = input.Position
-                startPos  = window.Position
-            end
-        end)
-        topbar.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1
-            or input.UserInputType == Enum.UserInputType.Touch then
-                dragging = false
-            end
-        end)
-        UIS.InputChanged:Connect(function(input)
-            if not dragging then return end
-            if input.UserInputType == Enum.UserInputType.MouseMovement
-            or input.UserInputType == Enum.UserInputType.Touch then
-                local d = input.Position - dragStart
-                window.Position = UDim2.new(
-                    startPos.X.Scale, startPos.X.Offset + d.X,
-                    startPos.Y.Scale, startPos.Y.Offset + d.Y
-                )
-            end
+    if callback then
+        Button.MouseButton1Click:Connect(function()
+            task.spawn(callback)
         end)
     end
-
-    -- Скрыть/показать по клавише
-    local toggleKey = config.ToggleKey or Enum.KeyCode.RightShift
-    UIS.InputBegan:Connect(function(input, gpe)
-        if gpe then return end
-        if input.KeyCode == toggleKey then
-            gui.Enabled = not gui.Enabled
-        end
-    end)
-
-    -- Страница
-    local page = New("ScrollingFrame", {
-        Name                   = "Page",
-        Position               = UDim2.new(0, 6, 0, 6),
-        Size                   = UDim2.new(1, -12, 1, -12),
-        BackgroundTransparency = 1,
-        BorderSizePixel        = 0,
-        CanvasSize             = UDim2.new(0, 0, 0, 0),
-        AutomaticCanvasSize    = Enum.AutomaticSize.Y,
-        ScrollBarThickness     = 3,
-        ScrollBarImageColor3   = Color3.new(1, 1, 1),
-        ScrollingDirection     = Enum.ScrollingDirection.Y,
-        Parent                 = content,
-    })
-    New("UIListLayout", {
-        Padding   = UDim.new(0, 6),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent    = page,
-    })
-    New("UIPadding", {
-        PaddingTop    = UDim.new(0, 6),
-        PaddingBottom = UDim.new(0, 6),
-        PaddingLeft   = UDim.new(0, 4),
-        PaddingRight  = UDim.new(0, 4),
-        Parent        = page,
-    })
-    self.Page = page
-
-    return self
+    return Button, ButtonText
 end
 
---============================================================
--- ЭЛЕМЕНТЫ
---============================================================
-function Uhhhhhhhh:CreateSection(text)
-    local holder = New("Frame", {
-        Size                   = UDim2.new(1, 0, 0, 24),
-        BackgroundTransparency = 1,
-        LayoutOrder            = #self.Page:GetChildren(),
-        Parent                 = self.Page,
-    })
-    New("TextLabel", {
-        Size                   = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Font                   = Enum.Font.Code,
-        TextSize               = 16,
-        TextColor3             = Color3.new(1, 1, 1),
-        TextXAlignment         = Enum.TextXAlignment.Left,
-        Text                   = "-- " .. text .. " --",
-        Parent                 = holder,
-    })
-    return holder
-end
+-- Morphs — кнопка-раздел
+CreateButton(MainPage, "Morphs", nil, true)
 
-function Uhhhhhhhh:CreateButton(text, callback)
-    local b = New("TextButton", {
-        Size             = UDim2.new(1, 0, 0, 32),
-        BackgroundColor3 = Color3.new(0, 0, 0),
-        BorderSizePixel  = 0,
-        Font             = Enum.Font.Code,
-        TextSize         = 18,
-        TextColor3       = Color3.new(1, 1, 1),
-        Text             = text,
-        AutoButtonColor  = false,
-        LayoutOrder      = #self.Page:GetChildren(),
-        Parent           = self.Page,
-    })
-    Stylize(b)
-    b.MouseEnter:Connect(function()
-        Tween:Create(b, TweenInfo.new(0.15), {BackgroundTransparency = 0.5}):Play()
-    end)
-    b.MouseLeave:Connect(function()
-        Tween:Create(b, TweenInfo.new(0.15), {BackgroundTransparency = 0}):Play()
-    end)
-    b.MouseButton1Click:Connect(function()
-        PlayClick(self.Window)
-        task.spawn(callback)
-    end)
-    return b
-end
-
---============================================================
--- ИСПОЛЬЗОВАНИЕ
---============================================================
-local win = Uhhhhhhhh.new({
-    Title = "Uhhhhhhhh Library",
-})
-
-win:CreateSection("Morphs")
-
-win:CreateButton("Chronos Sentinel", function()
+-- Chronos Sentinel — обычная кнопка
+CreateButton(MainPage, "Chronos Sentinel", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)")
         local fn = loadstring(src)
         if fn then fn() end
     end)
-    if not ok then warn("[Uhhhhhhhh] Chronos Sentinel error:", err) end
+    if not ok then warn("[Uhhhhhh] Chronos Sentinel error:", err) end
 end)
 
-return Uhhhhhhhh
+--============================================================
+-- КРЭКТРО
+--============================================================
+local CracktroFrame = Util.Instance("Frame", UIMainFrame)
+CracktroFrame.Active = true
+CracktroFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+CracktroFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+CracktroFrame.Size = UDim2.new(0, 460, 0, 260)
+CracktroFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+CracktroFrame.BorderSizePixel = 0
+CracktroFrame.ZIndex = 10
+CracktroFrame.ClipsDescendants = true
+Stylize(CracktroFrame, {Glow = true})
+
+-- Трифорс
+local TriforceClip = Util.Instance("Frame", CracktroFrame)
+TriforceClip.Size = UDim2.new(1, 0, 1, 0)
+TriforceClip.BackgroundTransparency = 1
+TriforceClip.ClipsDescendants = true
+
+local Triforce = MakeTriforce(3, Color3.new(1, 0.3, 0.3), 0)
+Triforce.AnchorPoint = Vector2.new(0.5, 0.5)
+Triforce.Position = UDim2.new(0.5, 0, 0.5, 0)
+Triforce.Size = UDim2.new(0, 160, 0, 160)
+Triforce.Parent = TriforceClip
+Triforce.ZIndex = 1
+
+-- Частицы (звёзды)
+local particles = {}
+local ps = 100
+for i = 1, ps do
+    local r = (i / ps) * 2 * math.pi
+    local p = Util.Instance("Frame", CracktroFrame)
+    p.AnchorPoint = Vector2.new(0.5, 0.5)
+    p.Size = UDim2.fromOffset(2, 2)
+    p.BackgroundColor3 = Color3.new(1, 0.9, 0)
+    p.BorderSizePixel = 0
+    p.ZIndex = 0
+    p.Visible = false
+    table.insert(particles, {
+        p,
+        Vector2.new(math.sin(r), math.cos(r)) * 8,
+        Vector2.new(math.random(-128, 128), math.random(-128, 128)),
+        math.random() * 2 - 1,
+        false,
+        0,
+    })
+end
+
+-- Текст
+local cracktroTitle = MakeText("Uhhhhhh Reanimate")
+cracktroTitle.AnchorPoint = Vector2.new(0.5, 1)
+cracktroTitle.Position = UDim2.new(0.5, 0, 1, -30)
+cracktroTitle.ZIndex = 3
+cracktroTitle.Parent = CracktroFrame
+SetTextColor(cracktroTitle, UITextColor.Value, 0)
+
+local cracktroSub = MakeText("Modded")
+cracktroSub.AnchorPoint = Vector2.new(0.5, 1)
+cracktroSub.Position = UDim2.new(0.5, 0, 1, -20)
+cracktroSub.ZIndex = 3
+cracktroSub.Parent = CracktroFrame
+SetTextColor(cracktroSub, UITextColor.Value, 0.3)
+
+local cracktroClick = MakeText("Click to start!")
+cracktroClick.AnchorPoint = Vector2.new(0.5, 1)
+cracktroClick.Position = UDim2.new(0.5, 0, 1, -10)
+cracktroClick.ZIndex = 3
+cracktroClick.Parent = CracktroFrame
+SetTextColor(cracktroClick, Color3.fromHSV(0.33, 0.8, 1), 0)
+
+-- Перекраска текстов
+UITextColor.Changed:Connect(function(val)
+    SetTextColor(cracktroTitle, val, 0)
+    SetTextColor(cracktroSub, val, 0.3)
+end)
+task.spawn(function()
+    while CracktroFrame.Parent do
+        local t = os.clock()
+        cracktroClick.Parent:GetChildren()
+        for _, v in cracktroClick:GetChildren() do
+            if v:IsA("Frame") then
+                v.BackgroundColor3 = Color3.fromHSV((t * 0.3) % 1, 0.9, 1)
+            end
+        end
+        task.wait(0.03)
+    end
+end)
+
+--============================================================
+-- Общая отрисовка
+--============================================================
+local _totalrendertime = 0
+local oldpbl = 0
+RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Value - 69, function(dt)
+    _totalrendertime += dt
+    local t   = _totalrendertime
+    local c   = GetUIColor(t)
+
+    -- Перекраска обводок
+    for _, grad in ipairs(StylizedObjs) do
+        local obj, Out = grad.obj, grad.Out
+        if obj.Parent then
+            Out.Color = c
+            obj.BackgroundColor3 = GetUIBGColor(t)
+        end
+    end
+
+    MainPage.BorderColor3 = c
+    MainPage.BackgroundColor3 = GetUIBGColor(t)
+
+    -- Анимация крэктро
+    if CracktroFrame.Parent and CracktroFrame.Visible then
+        -- Вращение трифорса
+        local spin = 40 + math.sin(t * 2) * 30
+        Triforce.Rotation = (Triforce.Rotation + spin * dt) % 360
+        local scale = 0.9 + math.sin(t * 3) * 0.05
+        Triforce.Size = UDim2.new(0, 160 * scale, 0, 160 * scale)
+
+        -- Частицы
+        local frSize = CracktroFrame.AbsoluteSize
+        local fov = 220
+        local ring = CFrame.Angles(0, t * 0.2, math.sin(t * 0.5) * 0.3)
+        for i, v in ipairs(particles) do
+            local inst, pos, vel, zind = v[1], v[2], v[3], v[4]
+            local d = pos.Magnitude
+            if d > 0 then
+                local r = math.atan2(pos.X / d, pos.Y / d)
+                local a = math.pi * 0.375
+                local out = Vector2.new(math.sin(r + a), math.cos(r + a))
+                local tp = out * (40 + math.sin(t * 2 + i) * 15)
+                local tv = (tp - pos) * 2
+                vel = tv:Lerp(vel, math.exp(-2 * dt))
+                pos += vel * dt
+            end
+            v[2], v[3] = pos, vel
+            local sp = ring:VectorToWorldSpace(Vector3.new(zind * pos.Magnitude / 6, pos.Y, pos.X))
+            local z = sp.Z
+            local sc = fov / (z + fov)
+            local x = sp.X * sc + frSize.X / 2
+            local y = sp.Y * sc + frSize.Y / 2
+            if z > 1 - fov then
+                inst.Visible = true
+                inst.Position = UDim2.fromOffset(x, y)
+                inst.Size = UDim2.fromOffset(sc * 2.5, sc * 2.5)
+            else
+                inst.Visible = false
+            end
+        end
+    end
+end)
+
+--============================================================
+-- Клик по крэктро -> показать панель
+--============================================================
+local clickConn
+clickConn = CracktroFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        if _totalrendertime < 0.5 then return end
+        clickConn:Disconnect()
+        CracktroFrame.Interactable = false
+
+        -- Выезд крэктро влево
+        local tween = TweenService:Create(CracktroFrame, TweenInfo.new(0.6, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, -500, 0.5, 0),
+        })
+        tween:Play()
+        -- Показать панель
+        UIMainWindow.Visible = true
+        UIMainWindow.Size = UDim2.fromOffset(0, 0)
+        TweenService:Create(UIMainWindow, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.fromOffset(360, 240),
+        }):Play()
+
+        tween.Completed:Connect(function()
+            CracktroFrame.Visible = false
+            task.delay(0.3, function()
+                CracktroFrame:Destroy()
+            end)
+        end)
+    end
+end)
