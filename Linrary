@@ -345,57 +345,6 @@ TopBarClose.Activated:Connect(function()
     end
 end)
 
-local dragref = nil
-local offset  = Vector2.new(0, 0)
-
-UserInputService.InputBegan:Connect(function(input)
-    if input.UserInputState ~= Enum.UserInputState.Begin then return end
-    if input.UserInputType ~= Enum.UserInputType.MouseButton1
-    and input.UserInputType ~= Enum.UserInputType.Touch then return end
-
-    local x, y = input.Position.X, input.Position.Y
-    local ap = UIMainWindow.AbsolutePosition
-    local as = UIMainWindow.AbsoluteSize
-
-    if x < ap.X or x > ap.X + as.X or y < ap.Y or y > ap.Y + as.Y then return end
-
-    local objs = PlayerGui:GetGuiObjectsAtPosition(x, y)
-    for _, o in ipairs(objs) do
-        if o == UIMainWindow or o:IsDescendantOf(UIMainWindow) then
-            if o:IsA("GuiButton") or o:IsA("TextBox") then
-                return
-            end
-            break
-        end
-    end
-
-    local screen = workspace.CurrentCamera.ViewportSize
-    local ch = Vector2.new(x, y) / screen
-    offset = Vector2.new(UIMainWindow.Position.X.Scale, UIMainWindow.Position.Y.Scale) - ch
-    dragref = input
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if not dragref then return end
-    if input.UserInputType == Enum.UserInputType.MouseMovement
-    or (input.UserInputType == Enum.UserInputType.Touch and dragref == input) then
-        local screen = workspace.CurrentCamera.ViewportSize
-        local ch = Vector2.new(input.Position.X, input.Position.Y) / screen
-        local pos = ch + offset
-        local half = UIMainWindow.AbsoluteSize / 2
-        local minX = half.X / screen.X
-        local maxX = 1 - minX
-        local minY = half.Y / screen.Y
-        local maxY = 1 - minY
-        pos = Vector2.new(math.clamp(pos.X, minX, maxX), math.clamp(pos.Y, minY, maxY))
-        UIMainWindow.Position = UDim2.fromScale(pos.X, pos.Y)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if dragref and dragref == input then dragref = nil end
-end)
-
 local MainPage = Util.Instance("ScrollingFrame", WindowContent)
 MainPage.AnchorPoint = Vector2.new(0.5, 0.5)
 MainPage.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -413,6 +362,7 @@ MainPage.ScrollBarImageTransparency = 0.5
 MainPage.TopImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 MainPage.MidImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 MainPage.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+MainPage.Active = false
 
 local Padding = Util.Instance("UIPadding", MainPage)
 Padding.PaddingTop    = UDim.new(0, 5)
@@ -471,6 +421,69 @@ CreateButton(MainPage, "Chronos Sentinel", function()
     end)
     if not ok then warn("[Uhhhhhhh] Chronos Sentinel error:", err) end
 end, false, 2)
+
+local dragref = nil
+local offset  = Vector2.new(0, 0)
+
+local function IsOverButtonOrTextbox(x, y)
+    for _, d in ipairs(UIMainWindow:GetDescendants()) do
+        if (d:IsA("GuiButton") or d:IsA("TextBox")) and d.Visible then
+            local ap, as = d.AbsolutePosition, d.AbsoluteSize
+            if x >= ap.X and x <= ap.X + as.X and y >= ap.Y and y <= ap.Y + as.Y then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function StartDrag(input)
+    if dragref then return end
+    if input.UserInputState ~= Enum.UserInputState.Begin then return end
+    if input.UserInputType ~= Enum.UserInputType.MouseButton1
+    and input.UserInputType ~= Enum.UserInputType.Touch then return end
+
+    local x, y = input.Position.X, input.Position.Y
+    local ap = UIMainWindow.AbsolutePosition
+    local as = UIMainWindow.AbsoluteSize
+    if x < ap.X or x > ap.X + as.X or y < ap.Y or y > ap.Y + as.Y then return end
+    if IsOverButtonOrTextbox(x, y) then return end
+
+    local screen = workspace.CurrentCamera.ViewportSize
+    local ch = Vector2.new(x, y) / screen
+    offset = Vector2.new(UIMainWindow.Position.X.Scale, UIMainWindow.Position.Y.Scale) - ch
+    dragref = input
+end
+
+TopBarFrame.InputBegan:Connect(StartDrag)
+WindowContent.InputBegan:Connect(StartDrag)
+MainPage.InputBegan:Connect(StartDrag)
+UIMainWindow.InputBegan:Connect(StartDrag)
+
+UserInputService.InputBegan:Connect(function(input)
+    StartDrag(input)
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if not dragref then return end
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+    or (input.UserInputType == Enum.UserInputType.Touch and dragref == input) then
+        local screen = workspace.CurrentCamera.ViewportSize
+        local ch = Vector2.new(input.Position.X, input.Position.Y) / screen
+        local pos = ch + offset
+        local half = UIMainWindow.AbsoluteSize / 2
+        local minX = half.X / screen.X
+        local maxX = 1 - minX
+        local minY = half.Y / screen.Y
+        local maxY = 1 - minY
+        pos = Vector2.new(math.clamp(pos.X, minX, maxX), math.clamp(pos.Y, minY, maxY))
+        UIMainWindow.Position = UDim2.fromScale(pos.X, pos.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if dragref and dragref == input then dragref = nil end
+end)
 
 local CracktroFrame = Util.Instance("Frame", UIMainFrame)
 CracktroFrame.Active = true
