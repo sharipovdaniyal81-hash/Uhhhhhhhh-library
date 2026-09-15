@@ -411,6 +411,15 @@ CreateButton(MainPage, "All Seeing Hand", function()
     if not ok then warn("[Uhhhhhhh] All Seeing Hand error:", err) end
 end)
 
+CreateButton(MainPage, "Goner", function()
+    local ok, err = pcall(function()
+        local src = game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Goner/refs/heads/main/Goner")
+        local fn = loadstring(src)
+        if fn then fn() end
+    end)
+    if not ok then warn("[Uhhhhhhh] Goner error:", err) end
+end)
+
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
