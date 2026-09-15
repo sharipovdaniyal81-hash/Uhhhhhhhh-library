@@ -1,11 +1,3 @@
---[[
-    Uhhhhhhh Library
-    Полный стиль Uhhhhhh Reanimate
-    - Крэктро с трифорсом + частицами + ASCII текстом
-    - Панель с разделом Morphs и Chronos Sentinel
-    - RGB-переливание всего
-]]
-
 local Players          = game:GetService("Players")
 local RunService       = game:GetService("RunService")
 local TweenService     = game:GetService("TweenService")
@@ -18,9 +10,6 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui   = LocalPlayer:WaitForChild("PlayerGui")
 local gethui      = gethui or get_hidden_gui or function() return CoreGui end
 
---============================================================
--- UTIL
---============================================================
 local Util = {}
 function Util.Instance(class, parent)
     local i = Instance.new(class)
@@ -35,9 +24,6 @@ function Util.LinkDestroyI2C(a, b)
     a.Destroying:Once(function() b:Disconnect() end)
 end
 
---============================================================
--- ScreenGui
---============================================================
 if PlayerGui:FindFirstChild("UhhhhhhhLibrary") then
     PlayerGui.UhhhhhhhLibrary:Destroy()
 end
@@ -56,15 +42,9 @@ UIMainFrame.BackgroundTransparency = 1
 UIMainFrame.BorderSizePixel = 0
 UIMainFrame.ZIndex = 2147483647
 
---============================================================
--- Цвета
---============================================================
 local GetUIColor   = function(t) return Util.LoopedHSV(t / 10, 0.8, 1) end
 local GetUIBGColor = function(t) return Color3.new(0, 0, 0) end
 
---============================================================
--- Стилизация
---============================================================
 local StylizedObjs = {}
 local function Stylize(obj, options)
     options = options or {}
@@ -91,16 +71,10 @@ local function RegisterTextLabel(obj)
     end
 end
 
---============================================================
--- Звук клика
---============================================================
 local ClickSound = Util.Instance("Sound", UIMainFrame)
 ClickSound.SoundId = "rbxassetid://118806752369227"
 ClickSound.Volume  = 1
 
---============================================================
--- ASCII TEXT
---============================================================
 local ASCII_LOOKUP = "BCDEIKOPQRSTUVYZ\\_`N^MJ"
 local ASCII_DATA = ""
 ASCII_DATA ..= "DDDDD@DFF@@@@@FSFSFSF@@@@@@@@@@@@@@EMMUKKTDD@@@@@DEEEEEDDBBBBBD@@@@@@@@@@@@@@@@@@@DE@@@G@@@@@@@@@DABBDEEI"
@@ -178,9 +152,6 @@ local function SetTextColor(text, color, tran)
     end
 end
 
---============================================================
--- ТРИФОРС
---============================================================
 local function MakeTriforce(tris, color, dur)
     dur = dur or 8
     local function CreateTriangle(parent, radius, width, rotation, color)
@@ -235,9 +206,6 @@ local function MakeTriforce(tris, color, dur)
     return pivot
 end
 
---============================================================
--- Главное окно
---============================================================
 local UIMainWindow = Util.Instance("Frame", UIMainFrame)
 UIMainWindow.Active = true
 UIMainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -273,7 +241,6 @@ UIMainWindow.DescendantAdded:Connect(function(v)
     if v:IsA("GuiObject") then _registerclicksnd(v) end
 end)
 
--- Topbar
 local TopBarFrame = Util.Instance("Frame", UIMainWindow)
 TopBarFrame.Size = UDim2.new(1, 0, 0, 30)
 TopBarFrame.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -292,6 +259,18 @@ TopBarText.TextSize = 20
 TopBarText.TextXAlignment = Enum.TextXAlignment.Left
 TopBarText.Text = "Uhhhhhhh Library"
 RegisterTextLabel(TopBarText)
+
+local MiniText = Util.Instance("TextLabel", TopBarFrame)
+MiniText.AnchorPoint = Vector2.new(0, 0.5)
+MiniText.Position = UDim2.new(0, 8, 0.5, 0)
+MiniText.Size = UDim2.new(1, -35, 1, 0)
+MiniText.BackgroundTransparency = 1
+MiniText.Font = Enum.Font.Code
+MiniText.TextSize = 20
+MiniText.TextXAlignment = Enum.TextXAlignment.Left
+MiniText.Text = "Uhhhhhh"
+MiniText.Visible = false
+RegisterTextLabel(MiniText)
 
 local TopBarClose = Util.Instance("TextButton", TopBarFrame)
 TopBarClose.AnchorPoint = Vector2.new(1, 0)
@@ -326,16 +305,16 @@ WindowContent.Size = UDim2.new(1, 0, 1, -35)
 WindowContent.BackgroundTransparency = 1
 WindowContent.ClipsDescendants = true
 
--- Сворачивание
 local MainWindowClosed = false
 local MainWindowTweening = false
 TopBarClose.Activated:Connect(function()
     if MainWindowTweening then return end
     MainWindowTweening = true
     MainWindowClosed = not MainWindowClosed
+
     if MainWindowClosed then
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(112, 30)
+            Size = UDim2.fromOffset(140, 30)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 180
@@ -343,11 +322,15 @@ TopBarClose.Activated:Connect(function()
         TweenService:Create(TopBarClose.A.B, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Size = UDim2.new(0, 2, 0, 16)
         }):Play()
+        TopBarText.Visible = false
+        MiniText.Visible = true
         task.delay(0.6, function()
             WindowContent.Visible = false
             MainWindowTweening = false
         end)
     else
+        TopBarText.Visible = true
+        MiniText.Visible = false
         WindowContent.Visible = true
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Size = UDim2.fromOffset(360, 240)
@@ -364,10 +347,9 @@ TopBarClose.Activated:Connect(function()
     end
 end)
 
--- Перетаскивание
 local dragref = nil
 local offset  = Vector2.new(0, 0)
-TopBarFrame.InputBegan:Connect(function(input)
+local function StartDrag(input)
     if dragref then return end
     if input.UserInputState ~= Enum.UserInputState.Begin then return end
     if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -376,6 +358,17 @@ TopBarFrame.InputBegan:Connect(function(input)
         local ch = (Vector2.new(input.Position.X, input.Position.Y) + SCREENGUI.AbsolutePosition) / screen
         offset = Vector2.new(UIMainWindow.Position.X.Scale, UIMainWindow.Position.Y.Scale) - ch
         dragref = input
+    end
+end
+TopBarFrame.InputBegan:Connect(StartDrag)
+UIMainWindow.InputBegan:Connect(function(input)
+    local pos = input.Position
+    local gui = PlayerGui:GetGuiObjectsAtPosition(pos.X, pos.Y)
+    for _, g in ipairs(gui) do
+        if g == UIMainWindow then
+            StartDrag(input)
+            return
+        end
     end
 end)
 UserInputService.InputChanged:Connect(function(input)
@@ -392,9 +385,6 @@ UserInputService.InputEnded:Connect(function(input)
     if dragref and dragref == input then dragref = nil end
 end)
 
---============================================================
--- Страница
---============================================================
 local MainPage = Util.Instance("ScrollingFrame", WindowContent)
 MainPage.AnchorPoint = Vector2.new(0.5, 0.5)
 MainPage.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -423,16 +413,13 @@ UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIList.VerticalAlignment   = Enum.VerticalAlignment.Top
 UIList.Padding             = UDim.new(0, 4)
 
---============================================================
--- Кнопки на странице
---============================================================
-local function CreateButton(parent, text, callback, sectionStyle)
+local function CreateButton(parent, text, callback, sectionStyle, layoutOrder)
     local margin = 5
     local Container = Util.Instance("Frame", parent)
     Container.AnchorPoint = Vector2.new(0.5, 0)
     Container.Size = UDim2.new(1, 0, 0, sectionStyle and 30 or 36)
     Container.BackgroundTransparency = 1
-    Container.LayoutOrder = #parent:GetChildren()
+    Container.LayoutOrder = layoutOrder or #parent:GetChildren()
 
     local Button = Util.Instance("TextButton", Container)
     Button.Position = UDim2.new(0, margin, 0, margin // 2)
@@ -463,22 +450,17 @@ local function CreateButton(parent, text, callback, sectionStyle)
     return Button, ButtonText
 end
 
--- Morphs — кнопка-раздел
-CreateButton(MainPage, "Morphs", nil, true)
+CreateButton(MainPage, "Morphs", nil, true, 1)
 
--- Chronos Sentinel — обычная кнопка
 CreateButton(MainPage, "Chronos Sentinel", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)")
         local fn = loadstring(src)
         if fn then fn() end
     end)
-    if not ok then warn("[Uhhhhhh] Chronos Sentinel error:", err) end
-end)
+    if not ok then warn("[Uhhhhhhh] Chronos Sentinel error:", err) end
+end, false, 2)
 
---============================================================
--- КРЭКТРО
---============================================================
 local CracktroFrame = Util.Instance("Frame", UIMainFrame)
 CracktroFrame.Active = true
 CracktroFrame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -560,9 +542,6 @@ task.spawn(function()
     end
 end)
 
---============================================================
--- Общая отрисовка
---============================================================
 local _totalrendertime = 0
 RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Value - 69, function(dt)
     _totalrendertime += dt
@@ -618,9 +597,6 @@ RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Valu
     end
 end)
 
---============================================================
--- Клик по крэктро -> показать панель
---============================================================
 local clickConn
 clickConn = CracktroFrame.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1
