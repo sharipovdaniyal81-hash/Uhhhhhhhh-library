@@ -215,7 +215,7 @@ local UIMainWindow = Util.Instance("Frame", UIMainFrame)
 UIMainWindow.Active = true
 UIMainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 UIMainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-UIMainWindow.Size = UDim2.new(0, 360, 0, 360)
+UIMainWindow.Size = UDim2.new(0, 360, 0, 280)
 UIMainWindow.BackgroundColor3 = Color3.new(1, 1, 1)
 UIMainWindow.BorderSizePixel = 0
 UIMainWindow.Visible = false
@@ -314,7 +314,7 @@ TopBarClose.Activated:Connect(function()
         MiniText.Visible = false
         WindowContent.Visible = true
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 360)
+            Size = UDim2.fromOffset(360, 280)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 0
@@ -331,7 +331,7 @@ end)
 local MainPage = Util.Instance("ScrollingFrame", WindowContent)
 MainPage.AnchorPoint = Vector2.new(0.5, 0.5)
 MainPage.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainPage.Size = UDim2.new(0, 360, 0, 325)
+MainPage.Size = UDim2.new(0, 360, 0, 245)
 MainPage.BackgroundColor3 = Color3.new(0, 0, 0)
 MainPage.BorderSizePixel = 1
 MainPage.BorderColor3 = Color3.new(1, 1, 1)
@@ -397,48 +397,39 @@ local function CreateButton(parent, text, callback)
 end
 
 CreateButton(MainPage, "Chronos Sentinel", function()
-    local ok, err = pcall(function()
-        local src = game:HttpGet("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)")
-        local fn = loadstring(src)
-        if fn then fn() end
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)"))()
     end)
-    if not ok then warn("[Uhhhhhhh] Chronos Sentinel error:", err) end
 end)
 
 CreateButton(MainPage, "All Seeing Hand", function()
-    local ok, err = pcall(function()
-        local src = game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/All-Seeing-Hand-/refs/heads/main/Hand")
-        local fn = loadstring(src)
-        if fn then fn() end
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/All-Seeing-Hand-/refs/heads/main/Hand"))()
     end)
-    if not ok then warn("[Uhhhhhhh] All Seeing Hand error:", err) end
 end)
 
 CreateButton(MainPage, "Goner", function()
-    local ok, err = pcall(function()
-        local src = game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Goner/refs/heads/main/Goner")
-        local fn = loadstring(src)
-        if fn then fn() end
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Goner/refs/heads/main/Goner"))()
     end)
-    if not ok then warn("[Uhhhhhhh] Goner error:", err) end
 end)
 
 CreateButton(MainPage, "Lunatic", function()
-    local ok, err = pcall(function()
-        local src = game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/lunatic")
-        local fn = loadstring(src)
-        if fn then fn() end
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/lunatic"))()
     end)
-    if not ok then warn("[Uhhhhhhh] Lunatic error:", err) end
 end)
 
 CreateButton(MainPage, "Shrike", function()
-    local ok, err = pcall(function()
-        local src = game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/Shrike")
-        local fn = loadstring(src)
-        if fn then fn() end
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/Shrike"))()
     end)
-    if not ok then warn("[Uhhhhhhh] Shrike error:", err) end
+end)
+
+CreateButton(MainPage, "Killbot V2", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/KillbotV2"))()
+    end)
 end)
 
 local dragref = nil
@@ -654,7 +645,7 @@ clickConn = CracktroFrame.InputEnded:Connect(function(input)
         UIMainWindow.Visible = true
         UIMainWindow.Size = UDim2.fromOffset(0, 0)
         TweenService:Create(UIMainWindow, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 360),
+            Size = UDim2.fromOffset(360, 280),
         }):Play()
 
         tween.Completed:Connect(function()
