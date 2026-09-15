@@ -355,11 +355,32 @@ UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIList.VerticalAlignment   = Enum.VerticalAlignment.Top
 UIList.Padding             = UDim.new(0, 4)
 
-local function CreateButton(parent, text, callback, sectionStyle, layoutOrder)
+local function CreateSection(parent, text, layoutOrder)
+    local Container = Util.Instance("Frame", parent)
+    Container.AnchorPoint = Vector2.new(0.5, 0)
+    Container.Size = UDim2.new(1, 0, 0, 26)
+    Container.BackgroundTransparency = 1
+    Container.LayoutOrder = layoutOrder or #parent:GetChildren()
+
+    local T = Util.Instance("TextLabel", Container)
+    T.AnchorPoint = Vector2.new(0, 0.5)
+    T.Position = UDim2.new(0, 10, 0.5, 0)
+    T.Size = UDim2.new(1, -20, 1, 0)
+    T.BackgroundTransparency = 1
+    T.Font = Enum.Font.Code
+    T.TextSize = 16
+    T.TextXAlignment = Enum.TextXAlignment.Left
+    T.TextYAlignment = Enum.TextYAlignment.Center
+    T.Text = text
+    RegisterTextLabel(T)
+    return T
+end
+
+local function CreateButton(parent, text, callback, layoutOrder)
     local margin = 5
     local Container = Util.Instance("Frame", parent)
     Container.AnchorPoint = Vector2.new(0.5, 0)
-    Container.Size = UDim2.new(1, 0, 0, sectionStyle and 30 or 36)
+    Container.Size = UDim2.new(1, 0, 0, 36)
     Container.BackgroundTransparency = 1
     Container.LayoutOrder = layoutOrder or #parent:GetChildren()
 
@@ -373,14 +394,14 @@ local function CreateButton(parent, text, callback, sectionStyle, layoutOrder)
 
     local ButtonText = Util.Instance("TextLabel", Button)
     ButtonText.AnchorPoint = Vector2.new(0, 0.5)
-    ButtonText.Position = UDim2.new(0, sectionStyle and 12 or 0, 0.5, 0)
-    ButtonText.Size = UDim2.new(1, sectionStyle and -24 or 0, 1, 0)
+    ButtonText.Position = UDim2.new(0, 0, 0.5, 0)
+    ButtonText.Size = UDim2.new(1, 0, 1, 0)
     ButtonText.BackgroundTransparency = 1
     ButtonText.Font = Enum.Font.Code
-    ButtonText.TextSize = sectionStyle and 15 or 18
-    ButtonText.TextXAlignment = sectionStyle and Enum.TextXAlignment.Left or Enum.TextXAlignment.Center
+    ButtonText.TextSize = 18
+    ButtonText.TextXAlignment = Enum.TextXAlignment.Center
     ButtonText.TextYAlignment = Enum.TextYAlignment.Center
-    ButtonText.Text = sectionStyle and ("-- " .. text .. " --") or text
+    ButtonText.Text = text
     RegisterTextLabel(ButtonText)
     Stylize(Button)
     AttachClickSound(Button)
@@ -393,8 +414,7 @@ local function CreateButton(parent, text, callback, sectionStyle, layoutOrder)
     return Button, ButtonText
 end
 
-CreateButton(MainPage, "Morphs", nil, true, 1)
-
+CreateSection(MainPage, "Morphs", 1)
 CreateButton(MainPage, "Chronos Sentinel", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)")
@@ -402,8 +422,7 @@ CreateButton(MainPage, "Chronos Sentinel", function()
         if fn then fn() end
     end)
     if not ok then warn("[Uhhhhhhh] Chronos Sentinel error:", err) end
-end, false, 2)
-
+end, 2)
 CreateButton(MainPage, "All Seeing Hand", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/All-Seeing-Hand-/refs/heads/main/Hand")
@@ -411,7 +430,7 @@ CreateButton(MainPage, "All Seeing Hand", function()
         if fn then fn() end
     end)
     if not ok then warn("[Uhhhhhhh] All Seeing Hand error:", err) end
-end, false, 3)
+end, 3)
 
 local dragref = nil
 local offset  = Vector2.new(0, 0)
