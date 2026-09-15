@@ -1,8 +1,8 @@
 --[[
-    Uhhhhhh Panel with Cracktro
+    Uhhhhhhh Library
     Полный стиль Uhhhhhh Reanimate
     - Крэктро с трифорсом + частицами + ASCII текстом
-    - Панель с разделом Morphs (кнопка) и Chronos Sentinel
+    - Панель с разделом Morphs и Chronos Sentinel
     - RGB-переливание всего
 ]]
 
@@ -38,12 +38,12 @@ end
 --============================================================
 -- ScreenGui
 --============================================================
-if PlayerGui:FindFirstChild("UhhhhhhPanel") then
-    PlayerGui.UhhhhhhPanel:Destroy()
+if PlayerGui:FindFirstChild("UhhhhhhhLibrary") then
+    PlayerGui.UhhhhhhhLibrary:Destroy()
 end
 
 local SCREENGUI = Util.Instance("ScreenGui", gethui())
-SCREENGUI.Name = "UhhhhhhPanel"
+SCREENGUI.Name = "UhhhhhhhLibrary"
 SCREENGUI.IgnoreGuiInset = true
 SCREENGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 SCREENGUI.ResetOnSpawn = false
@@ -193,7 +193,6 @@ local function MakeTriforce(tris, color, dur)
         pivot.BorderSizePixel = 0
         pivot.Rotation = rotation
 
-        -- Треугольник из 3 линий
         local tri = Util.Instance("Frame", pivot)
         tri.AnchorPoint = Vector2.new(0.5, 1)
         tri.Position = UDim2.new(0.5, 0, 0.5 - radius, 0)
@@ -201,7 +200,6 @@ local function MakeTriforce(tris, color, dur)
         tri.BackgroundTransparency = 1
         tri.BorderSizePixel = 0
 
-        -- Тонкие линии треугольника (3 грани)
         local thick = 0.06
         local function edge(p1, p2)
             local mx = (p1.X + p2.X) / 2
@@ -292,7 +290,7 @@ TopBarText.BackgroundTransparency = 1
 TopBarText.Font = Enum.Font.Code
 TopBarText.TextSize = 20
 TopBarText.TextXAlignment = Enum.TextXAlignment.Left
-TopBarText.Text = "Uhhhhhh Reanimate (modded)"
+TopBarText.Text = "Uhhhhhhh Library"
 RegisterTextLabel(TopBarText)
 
 local TopBarClose = Util.Instance("TextButton", TopBarFrame)
@@ -492,7 +490,6 @@ CracktroFrame.ZIndex = 10
 CracktroFrame.ClipsDescendants = true
 Stylize(CracktroFrame, {Glow = true})
 
--- Трифорс
 local TriforceClip = Util.Instance("Frame", CracktroFrame)
 TriforceClip.Size = UDim2.new(1, 0, 1, 0)
 TriforceClip.BackgroundTransparency = 1
@@ -505,7 +502,6 @@ Triforce.Size = UDim2.new(0, 160, 0, 160)
 Triforce.Parent = TriforceClip
 Triforce.ZIndex = 1
 
--- Частицы (звёзды)
 local particles = {}
 local ps = 100
 for i = 1, ps do
@@ -527,8 +523,7 @@ for i = 1, ps do
     })
 end
 
--- Текст
-local cracktroTitle = MakeText("Uhhhhhh Reanimate")
+local cracktroTitle = MakeText("Uhhhhhhh Library")
 cracktroTitle.AnchorPoint = Vector2.new(0.5, 1)
 cracktroTitle.Position = UDim2.new(0.5, 0, 1, -30)
 cracktroTitle.ZIndex = 3
@@ -549,7 +544,6 @@ cracktroClick.ZIndex = 3
 cracktroClick.Parent = CracktroFrame
 SetTextColor(cracktroClick, Color3.fromHSV(0.33, 0.8, 1), 0)
 
--- Перекраска текстов
 UITextColor.Changed:Connect(function(val)
     SetTextColor(cracktroTitle, val, 0)
     SetTextColor(cracktroSub, val, 0.3)
@@ -557,7 +551,6 @@ end)
 task.spawn(function()
     while CracktroFrame.Parent do
         local t = os.clock()
-        cracktroClick.Parent:GetChildren()
         for _, v in cracktroClick:GetChildren() do
             if v:IsA("Frame") then
                 v.BackgroundColor3 = Color3.fromHSV((t * 0.3) % 1, 0.9, 1)
@@ -571,13 +564,11 @@ end)
 -- Общая отрисовка
 --============================================================
 local _totalrendertime = 0
-local oldpbl = 0
 RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Value - 69, function(dt)
     _totalrendertime += dt
     local t   = _totalrendertime
     local c   = GetUIColor(t)
 
-    -- Перекраска обводок
     for _, grad in ipairs(StylizedObjs) do
         local obj, Out = grad.obj, grad.Out
         if obj.Parent then
@@ -589,15 +580,12 @@ RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Valu
     MainPage.BorderColor3 = c
     MainPage.BackgroundColor3 = GetUIBGColor(t)
 
-    -- Анимация крэктро
     if CracktroFrame.Parent and CracktroFrame.Visible then
-        -- Вращение трифорса
         local spin = 40 + math.sin(t * 2) * 30
         Triforce.Rotation = (Triforce.Rotation + spin * dt) % 360
         local scale = 0.9 + math.sin(t * 3) * 0.05
         Triforce.Size = UDim2.new(0, 160 * scale, 0, 160 * scale)
 
-        -- Частицы
         local frSize = CracktroFrame.AbsoluteSize
         local fov = 220
         local ring = CFrame.Angles(0, t * 0.2, math.sin(t * 0.5) * 0.3)
@@ -641,12 +629,10 @@ clickConn = CracktroFrame.InputEnded:Connect(function(input)
         clickConn:Disconnect()
         CracktroFrame.Interactable = false
 
-        -- Выезд крэктро влево
         local tween = TweenService:Create(CracktroFrame, TweenInfo.new(0.6, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Position = UDim2.new(0.5, -500, 0.5, 0),
         })
         tween:Play()
-        -- Показать панель
         UIMainWindow.Visible = true
         UIMainWindow.Size = UDim2.fromOffset(0, 0)
         TweenService:Create(UIMainWindow, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
