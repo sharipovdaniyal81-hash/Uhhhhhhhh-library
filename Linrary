@@ -348,27 +348,29 @@ end)
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
-local function IsPointOverButton(x, y)
-    for _, d in ipairs(UIMainWindow:GetDescendants()) do
-        if d:IsA("GuiButton") and d.Visible and d.Active then
-            local ap, as = d.AbsolutePosition, d.AbsoluteSize
-            if x >= ap.X and x <= ap.X + as.X and y >= ap.Y and y <= ap.Y + as.Y then
-                return true
-            end
-        end
-    end
-    return false
-end
-
-UIMainWindow.InputBegan:Connect(function(input)
-    if dragref then return end
+UserInputService.InputBegan:Connect(function(input)
     if input.UserInputState ~= Enum.UserInputState.Begin then return end
     if input.UserInputType ~= Enum.UserInputType.MouseButton1
     and input.UserInputType ~= Enum.UserInputType.Touch then return end
-    if IsPointOverButton(input.Position.X, input.Position.Y) then return end
+
+    local x, y = input.Position.X, input.Position.Y
+    local ap = UIMainWindow.AbsolutePosition
+    local as = UIMainWindow.AbsoluteSize
+
+    if x < ap.X or x > ap.X + as.X or y < ap.Y or y > ap.Y + as.Y then return end
+
+    local objs = PlayerGui:GetGuiObjectsAtPosition(x, y)
+    for _, o in ipairs(objs) do
+        if o == UIMainWindow or o:IsDescendantOf(UIMainWindow) then
+            if o:IsA("GuiButton") or o:IsA("TextBox") then
+                return
+            end
+            break
+        end
+    end
 
     local screen = workspace.CurrentCamera.ViewportSize
-    local ch = Vector2.new(input.Position.X, input.Position.Y) / screen
+    local ch = Vector2.new(x, y) / screen
     offset = Vector2.new(UIMainWindow.Position.X.Scale, UIMainWindow.Position.Y.Scale) - ch
     dragref = input
 end)
