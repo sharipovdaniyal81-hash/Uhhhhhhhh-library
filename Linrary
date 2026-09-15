@@ -73,6 +73,12 @@ local ClickSound = Util.Instance("Sound", UIMainFrame)
 ClickSound.SoundId = "rbxassetid://118806752369227"
 ClickSound.Volume  = 1
 
+local function AttachClickSound(button)
+    button.MouseButton1Click:Connect(function()
+        ClickSound:Play()
+    end)
+end
+
 local ASCII_LOOKUP = "BCDEIKOPQRSTUVYZ\\_`N^MJ"
 local ASCII_DATA = ""
 ASCII_DATA ..= "DDDDD@DFF@@@@@FSFSFSF@@@@@@@@@@@@@@EMMUKKTDD@@@@@DEEEEEDDBBBBBD@@@@@@@@@@@@@@@@@@@DE@@@G@@@@@@@@@DABBDEEI"
@@ -214,31 +220,6 @@ UIMainWindow.BorderSizePixel = 0
 UIMainWindow.Visible = false
 Stylize(UIMainWindow, {Glow = true})
 
-local _clicksndclicked = false
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-        _clicksndclicked = false
-    end
-end)
-local function _registerclicksnd(v)
-    if v:GetAttribute("ClickSnd") then return end
-    v:SetAttribute("ClickSnd", true)
-    v.InputBegan:Connect(function(input)
-        if _clicksndclicked then return end
-        if input.UserInputState ~= Enum.UserInputState.Begin then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
-            ClickSound:Play()
-            _clicksndclicked = true
-        end
-    end)
-end
-_registerclicksnd(UIMainWindow)
-UIMainWindow.DescendantAdded:Connect(function(v)
-    if v:IsA("GuiObject") then _registerclicksnd(v) end
-end)
-
 local TopBarFrame = Util.Instance("Frame", UIMainWindow)
 TopBarFrame.Size = UDim2.new(1, 0, 0, 30)
 TopBarFrame.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -296,6 +277,7 @@ do
         B.BackgroundColor3 = val
     end)
 end
+AttachClickSound(TopBarClose)
 
 local WindowContent = Util.Instance("Frame", UIMainWindow)
 WindowContent.Position = UDim2.new(0, 0, 0, 30)
@@ -362,7 +344,6 @@ MainPage.ScrollBarImageTransparency = 0.5
 MainPage.TopImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 MainPage.MidImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 MainPage.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
-MainPage.Active = false
 
 local Padding = Util.Instance("UIPadding", MainPage)
 Padding.PaddingTop    = UDim.new(0, 5)
@@ -402,6 +383,7 @@ local function CreateButton(parent, text, callback, sectionStyle, layoutOrder)
     ButtonText.Text = sectionStyle and ("-- " .. text .. " --") or text
     RegisterTextLabel(ButtonText)
     Stylize(Button)
+    AttachClickSound(Button)
 
     if callback then
         Button.MouseButton1Click:Connect(function()
@@ -454,11 +436,6 @@ local function StartDrag(input)
     offset = Vector2.new(UIMainWindow.Position.X.Scale, UIMainWindow.Position.Y.Scale) - ch
     dragref = input
 end
-
-TopBarFrame.InputBegan:Connect(StartDrag)
-WindowContent.InputBegan:Connect(StartDrag)
-MainPage.InputBegan:Connect(StartDrag)
-UIMainWindow.InputBegan:Connect(StartDrag)
 
 UserInputService.InputBegan:Connect(function(input)
     StartDrag(input)
