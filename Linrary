@@ -214,7 +214,7 @@ local UIMainWindow = Util.Instance("Frame", UIMainFrame)
 UIMainWindow.Active = true
 UIMainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 UIMainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-UIMainWindow.Size = UDim2.new(0, 360, 0, 240)
+UIMainWindow.Size = UDim2.new(0, 360, 0, 260)
 UIMainWindow.BackgroundColor3 = Color3.new(1, 1, 1)
 UIMainWindow.BorderSizePixel = 0
 UIMainWindow.Visible = false
@@ -313,7 +313,7 @@ TopBarClose.Activated:Connect(function()
         MiniText.Visible = false
         WindowContent.Visible = true
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 240)
+            Size = UDim2.fromOffset(360, 260)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 0
@@ -327,71 +327,45 @@ TopBarClose.Activated:Connect(function()
     end
 end)
 
-local MainPage = Util.Instance("ScrollingFrame", WindowContent)
-MainPage.AnchorPoint = Vector2.new(0.5, 0.5)
-MainPage.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainPage.Size = UDim2.new(0, 360, 0, 205)
-MainPage.BackgroundColor3 = Color3.new(0, 0, 0)
-MainPage.BorderSizePixel = 1
-MainPage.BorderColor3 = Color3.new(1, 1, 1)
-MainPage.ClipsDescendants = true
-MainPage.AutomaticCanvasSize = Enum.AutomaticSize.Y
-MainPage.CanvasSize = UDim2.new(0, 0, 0, 0)
-MainPage.ScrollingDirection = Enum.ScrollingDirection.Y
-MainPage.ScrollBarThickness = 3
-MainPage.ScrollBarImageColor3 = Color3.new(1, 1, 1)
-MainPage.ScrollBarImageTransparency = 0.5
-MainPage.TopImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
-MainPage.MidImage    = "rbxasset://textures/ui/Scroll/scroll-middle.png"
-MainPage.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+local TabBar = Util.Instance("Frame", WindowContent)
+TabBar.Position = UDim2.new(0, 0, 0, 0)
+TabBar.Size = UDim2.new(1, 0, 0, 32)
+TabBar.BackgroundTransparency = 1
 
-local Padding = Util.Instance("UIPadding", MainPage)
-Padding.PaddingTop    = UDim.new(0, 5)
-Padding.PaddingBottom = UDim.new(0, 5)
+local TabBarList = Util.Instance("UIListLayout", TabBar)
+TabBarList.FillDirection = Enum.FillDirection.Horizontal
+TabBarList.Padding = UDim.new(0, 4)
+TabBarList.VerticalAlignment = Enum.VerticalAlignment.Center
+TabBarList.SortOrder = Enum.SortOrder.LayoutOrder
 
-local UIList = Util.Instance("UIListLayout", MainPage)
-UIList.FillDirection       = Enum.FillDirection.Vertical
-UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-UIList.VerticalAlignment   = Enum.VerticalAlignment.Top
-UIList.Padding             = UDim.new(0, 4)
+local TabBarPad = Util.Instance("UIPadding", TabBar)
+TabBarPad.PaddingLeft = UDim.new(0, 8)
+TabBarPad.PaddingRight = UDim.new(0, 8)
 
-local function CreateSeparator(parent, layoutOrder)
-    local Sep = Util.Instance("Frame", parent)
-    Sep.AnchorPoint = Vector2.new(0.5, 0)
-    Sep.Size = UDim2.new(1, -20, 0, 1)
-    Sep.BackgroundColor3 = UITextColor.Value
-    Sep.BackgroundTransparency = 0.5
-    Sep.BorderSizePixel = 0
-    Sep.LayoutOrder = layoutOrder or #parent:GetChildren()
-    Util.LinkDestroyI2C(Sep, UITextColor.Changed:Connect(function(val)
-        Sep.BackgroundColor3 = val
-    end))
-    return Sep
-end
+local ContentArea = Util.Instance("CanvasGroup", WindowContent)
+ContentArea.Position = UDim2.new(0, 0, 0, 32)
+ContentArea.Size = UDim2.new(1, 0, 1, -32)
+ContentArea.BackgroundTransparency = 1
+ContentArea.GroupTransparency = 0
 
-local function CreateSection(parent, text, layoutOrder)
-    local Container = Util.Instance("Frame", parent)
-    Container.AnchorPoint = Vector2.new(0.5, 0)
-    Container.Size = UDim2.new(1, 0, 0, 30)
-    Container.BackgroundTransparency = 1
-    Container.LayoutOrder = layoutOrder or #parent:GetChildren()
+local ContentList = Util.Instance("UIListLayout", ContentArea)
+ContentList.FillDirection = Enum.FillDirection.Vertical
+ContentList.Padding = UDim.new(0, 4)
+ContentList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+ContentList.SortOrder = Enum.SortOrder.LayoutOrder
 
-    local T = Util.Instance("TextLabel", Container)
-    T.AnchorPoint = Vector2.new(0, 0.5)
-    T.Position = UDim2.new(0, 10, 0.5, 0)
-    T.Size = UDim2.new(1, -20, 1, 0)
-    T.BackgroundTransparency = 1
-    T.Font = Enum.Font.Code
-    T.TextSize = 16
-    T.TextXAlignment = Enum.TextXAlignment.Left
-    T.TextYAlignment = Enum.TextYAlignment.Center
-    T.Text = text
-    RegisterTextLabel(T)
-    return Container
-end
+local ContentPad = Util.Instance("UIPadding", ContentArea)
+ContentPad.PaddingTop = UDim.new(0, 6)
+ContentPad.PaddingBottom = UDim.new(0, 6)
+ContentPad.PaddingLeft = UDim.new(0, 5)
+ContentPad.PaddingRight = UDim.new(0, 5)
 
-local function CreateButton(parent, text, callback, layoutOrder)
-    local margin = 5
+local tabs = {}
+local currentTab = nil
+local switching = false
+
+local function MakeButton(parent, text, callback, layoutOrder)
+    local margin = 0
     local Container = Util.Instance("Frame", parent)
     Container.AnchorPoint = Vector2.new(0.5, 0)
     Container.Size = UDim2.new(1, 0, 0, 36)
@@ -399,8 +373,8 @@ local function CreateButton(parent, text, callback, layoutOrder)
     Container.LayoutOrder = layoutOrder or #parent:GetChildren()
 
     local Button = Util.Instance("TextButton", Container)
-    Button.Position = UDim2.new(0, margin, 0, margin // 2)
-    Button.Size = UDim2.new(1, margin * -2, 1, -margin)
+    Button.Position = UDim2.new(0, margin, 0, 0)
+    Button.Size = UDim2.new(1, 0, 1, 0)
     Button.BackgroundColor3 = Color3.new(1, 1, 1)
     Button.BorderSizePixel = 0
     Button.Text = ""
@@ -428,31 +402,115 @@ local function CreateButton(parent, text, callback, layoutOrder)
     return Button, ButtonText
 end
 
-CreateSeparator(MainPage, 1)
-CreateSection(MainPage, "Morphs", 2)
-CreateButton(MainPage, "Chronos Sentinel", function()
+local function SwitchTab(tab)
+    if switching then return end
+    if currentTab == tab then return end
+    switching = true
+
+    TweenService:Create(ContentArea, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        GroupTransparency = 1
+    }):Play()
+
+    task.wait(0.18)
+
+    for _, c in ContentArea:GetChildren() do
+        if c:IsA("GuiObject") then c:Destroy() end
+    end
+
+    currentTab = tab
+
+    for _, btnData in ipairs(tab.Buttons) do
+        MakeButton(ContentArea, btnData[1], btnData[2], btnData[3])
+    end
+
+    TweenService:Create(ContentArea, TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        GroupTransparency = 0
+    }):Play()
+
+    task.wait(0.22)
+    switching = false
+end
+
+local function CreateTab(name)
+    local tab = { Name = name, Buttons = {} }
+    table.insert(tabs, tab)
+
+    local container = Util.Instance("Frame", TabBar)
+    container.Size = UDim2.new(0, 100, 1, -8)
+    container.BackgroundTransparency = 1
+    container.LayoutOrder = #tabs
+
+    local btn = Util.Instance("TextButton", container)
+    btn.Size = UDim2.new(1, 0, 1, 0)
+    btn.BackgroundColor3 = Color3.new(1, 1, 1)
+    btn.BorderSizePixel = 0
+    btn.Text = ""
+    btn.AutoButtonColor = true
+
+    local txt = Util.Instance("TextLabel", btn)
+    txt.Size = UDim2.new(1, 0, 1, 0)
+    txt.BackgroundTransparency = 1
+    txt.Font = Enum.Font.Code
+    txt.TextSize = 15
+    txt.TextXAlignment = Enum.TextXAlignment.Center
+    txt.TextYAlignment = Enum.TextYAlignment.Center
+    txt.Text = name
+    RegisterTextLabel(txt)
+    Stylize(btn)
+    AttachClickSound(btn)
+
+    tab.Button = btn
+    tab.Text = txt
+
+    btn.MouseButton1Click:Connect(function()
+        SwitchTab(tab)
+    end)
+
+    function tab:CreateButton(text, callback)
+        table.insert(self.Buttons, {text, callback})
+    end
+
+    return tab
+end
+
+local morphs = CreateTab("Morphs")
+
+morphs:CreateButton("Chronos Sentinel", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)")
         local fn = loadstring(src)
         if fn then fn() end
     end)
     if not ok then warn("[Uhhhhhhh] Chronos Sentinel error:", err) end
-end, 3)
-CreateButton(MainPage, "All Seeing Hand", function()
+end)
+
+morphs:CreateButton("All Seeing Hand", function()
     local ok, err = pcall(function()
         local src = game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/All-Seeing-Hand-/refs/heads/main/Hand")
         local fn = loadstring(src)
         if fn then fn() end
     end)
     if not ok then warn("[Uhhhhhhh] All Seeing Hand error:", err) end
-end, 4)
+end)
+
+SwitchTab(morphs)
 
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
+local function IsVisibleRecursive(obj)
+    while obj do
+        if obj:IsA("GuiObject") and not obj.Visible then
+            return false
+        end
+        obj = obj.Parent
+    end
+    return true
+end
+
 local function IsOverButtonOrTextbox(x, y)
     for _, d in ipairs(UIMainWindow:GetDescendants()) do
-        if (d:IsA("GuiButton") or d:IsA("TextBox")) and d.Visible then
+        if (d:IsA("GuiButton") or d:IsA("TextBox")) and IsVisibleRecursive(d) then
             local ap, as = d.AbsolutePosition, d.AbsoluteSize
             if x >= ap.X and x <= ap.X + as.X and y >= ap.Y and y <= ap.Y + as.Y then
                 return true
@@ -594,9 +652,6 @@ RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Valu
         end
     end
 
-    MainPage.BorderColor3 = c
-    MainPage.BackgroundColor3 = GetUIBGColor(t)
-
     if CracktroFrame.Parent and CracktroFrame.Visible then
         local spin = 40 + math.sin(t * 2) * 30
         Triforce.Rotation = (Triforce.Rotation + spin * dt) % 360
@@ -650,7 +705,7 @@ clickConn = CracktroFrame.InputEnded:Connect(function(input)
         UIMainWindow.Visible = true
         UIMainWindow.Size = UDim2.fromOffset(0, 0)
         TweenService:Create(UIMainWindow, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(360, 240),
+            Size = UDim2.fromOffset(360, 260),
         }):Play()
 
         tween.Completed:Connect(function()
