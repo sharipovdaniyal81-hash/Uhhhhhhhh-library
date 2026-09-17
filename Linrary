@@ -232,7 +232,7 @@ Stylize(TopBarFrame)
 local TopBarText = Util.Instance("TextLabel", TopBarFrame)
 TopBarText.AnchorPoint = Vector2.new(0, 0.5)
 TopBarText.Position = UDim2.new(0, 8, 0.5, 0)
-TopBarText.Size = UDim2.new(1, -35, 1, 0)
+TopBarText.Size = UDim2.new(1, -70, 1, 0)
 TopBarText.BackgroundTransparency = 1
 TopBarText.Font = Enum.Font.Code
 TopBarText.TextSize = 20
@@ -243,7 +243,7 @@ RegisterTextLabel(TopBarText)
 local MiniText = Util.Instance("TextLabel", TopBarFrame)
 MiniText.AnchorPoint = Vector2.new(0, 0.5)
 MiniText.Position = UDim2.new(0, 8, 0.5, 0)
-MiniText.Size = UDim2.new(1, -35, 1, 0)
+MiniText.Size = UDim2.new(1, -70, 1, 0)
 MiniText.BackgroundTransparency = 1
 MiniText.Font = Enum.Font.Code
 MiniText.TextSize = 20
@@ -280,6 +280,33 @@ do
 end
 AttachClickSound(TopBarClose)
 
+local R6Button = Util.Instance("TextButton", TopBarFrame)
+R6Button.AnchorPoint = Vector2.new(1, 0.5)
+R6Button.Position = UDim2.new(1, -32, 0.5, 0)
+R6Button.Size = UDim2.new(0, 30, 0, 24)
+R6Button.BackgroundColor3 = Color3.new(1, 1, 1)
+R6Button.BorderSizePixel = 0
+R6Button.Text = ""
+R6Button.AutoButtonColor = true
+Stylize(R6Button)
+AttachClickSound(R6Button)
+
+local R6Text = Util.Instance("TextLabel", R6Button)
+R6Text.Size = UDim2.new(1, 0, 1, 0)
+R6Text.BackgroundTransparency = 1
+R6Text.Font = Enum.Font.Code
+R6Text.TextSize = 14
+R6Text.TextXAlignment = Enum.TextXAlignment.Center
+R6Text.TextYAlignment = Enum.TextYAlignment.Center
+R6Text.Text = "R6"
+RegisterTextLabel(R6Text)
+
+R6Button.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/R6/refs/heads/main/R6"))()
+    end)
+end)
+
 local WindowContent = Util.Instance("Frame", UIMainWindow)
 WindowContent.Position = UDim2.new(0, 0, 0, 30)
 WindowContent.Size = UDim2.new(1, 0, 1, -35)
@@ -295,7 +322,7 @@ TopBarClose.Activated:Connect(function()
 
     if MainWindowClosed then
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(140, 30)
+            Size = UDim2.fromOffset(170, 30)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 180
@@ -441,6 +468,36 @@ end)
 CreateButton(MainPage, "Sans", function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Sans/refs/heads/main/Sans"))()
+    end)
+end)
+
+CreateButton(MainPage, "Road Rogue", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Road-Rogue/refs/heads/main/Road%20Rogue"))()
+    end)
+end)
+
+CreateButton(MainPage, "Black Figure", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Black-Figure-/refs/heads/main/Black"))()
+    end)
+end)
+
+CreateButton(MainPage, "Refulgence", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/light"))()
+    end)
+end)
+
+CreateButton(MainPage, "Neptunian V", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/NepV"))()
+    end)
+end)
+
+CreateButton(MainPage, "Reflux", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/YZhbRq5w"))()
     end)
 end)
 
