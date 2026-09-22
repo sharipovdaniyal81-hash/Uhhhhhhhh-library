@@ -307,6 +307,35 @@ R6Button.MouseButton1Click:Connect(function()
     end)
 end)
 
+-- ========== КНОПКА KEYBOARD (⌨) ==========
+local KeyboardButton = Util.Instance("TextButton", TopBarFrame)
+KeyboardButton.AnchorPoint = Vector2.new(1, 0.5)
+KeyboardButton.Position = UDim2.new(1, -64, 0.5, 0)
+KeyboardButton.Size = UDim2.new(0, 30, 0, 24)
+KeyboardButton.BackgroundColor3 = Color3.new(1, 1, 1)
+KeyboardButton.BorderSizePixel = 0
+KeyboardButton.Text = ""
+KeyboardButton.AutoButtonColor = true
+Stylize(KeyboardButton)
+AttachClickSound(KeyboardButton)
+
+local KeyboardText = Util.Instance("TextLabel", KeyboardButton)
+KeyboardText.Size = UDim2.new(1, 0, 1, 0)
+KeyboardText.BackgroundTransparency = 1
+KeyboardText.Font = Enum.Font.Code
+KeyboardText.TextSize = 16
+KeyboardText.TextXAlignment = Enum.TextXAlignment.Center
+KeyboardText.TextYAlignment = Enum.TextYAlignment.Center
+KeyboardText.Text = "⌨"
+RegisterTextLabel(KeyboardText)
+
+KeyboardButton.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/keyboard/refs/heads/main/Hmmph%20keyboard%3F%3F%3F"))()
+    end)
+end)
+-- =========================================
+
 local WindowContent = Util.Instance("Frame", UIMainWindow)
 WindowContent.Position = UDim2.new(0, 0, 0, 30)
 WindowContent.Size = UDim2.new(1, 0, 1, -35)
