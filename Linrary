@@ -232,7 +232,7 @@ Stylize(TopBarFrame)
 local TopBarText = Util.Instance("TextLabel", TopBarFrame)
 TopBarText.AnchorPoint = Vector2.new(0, 0.5)
 TopBarText.Position = UDim2.new(0, 8, 0.5, 0)
-TopBarText.Size = UDim2.new(1, -70, 1, 0)
+TopBarText.Size = UDim2.new(0, 160, 1, 0)
 TopBarText.BackgroundTransparency = 1
 TopBarText.Font = Enum.Font.Code
 TopBarText.TextSize = 20
@@ -243,7 +243,7 @@ RegisterTextLabel(TopBarText)
 local MiniText = Util.Instance("TextLabel", TopBarFrame)
 MiniText.AnchorPoint = Vector2.new(0, 0.5)
 MiniText.Position = UDim2.new(0, 8, 0.5, 0)
-MiniText.Size = UDim2.new(1, -70, 1, 0)
+MiniText.Size = UDim2.new(0, 100, 1, 0)
 MiniText.BackgroundTransparency = 1
 MiniText.Font = Enum.Font.Code
 MiniText.TextSize = 20
@@ -667,12 +667,6 @@ CreateButton(MainPage, "Angel Of Darkness", function()
     end)
 end)
 
-CreateButton(MainPage, "Nebula", function()
-    pcall(function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/CZZJqf0s"))()
-    end)
-end)
-
 CreateButton(MainPage, "Lost Hope Scythe", function()
     pcall(function()
         loadstring(game:HttpGet("https://pastebin.com/raw/VH3PgimJ"))()
@@ -706,28 +700,6 @@ end)
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
-local function IsVisibleRecursive(obj)
-    while obj do
-        if obj:IsA("GuiObject") and not obj.Visible then
-            return false
-        end
-        obj = obj.Parent
-    end
-    return true
-end
-
-local function IsOverButtonOrTextbox(x, y)
-    for _, d in ipairs(UIMainWindow:GetDescendants()) do
-        if (d:IsA("GuiButton") or d:IsA("TextBox")) and IsVisibleRecursive(d) then
-            local ap, as = d.AbsolutePosition, d.AbsoluteSize
-            if x >= ap.X and x <= ap.X + as.X and y >= ap.Y and y <= ap.Y + as.Y then
-                return true
-            end
-        end
-    end
-    return false
-end
-
 local function StartDrag(input)
     if dragref then return end
     if input.UserInputState ~= Enum.UserInputState.Begin then return end
@@ -735,12 +707,22 @@ local function StartDrag(input)
     and input.UserInputType ~= Enum.UserInputType.Touch then return end
 
     local x, y = input.Position.X, input.Position.Y
-    -- Двигать можно ТОЛЬКО за верхнюю панель (TopBarFrame)
-    local ap = TopBarFrame.AbsolutePosition
-    local as = TopBarFrame.AbsoluteSize
-    if x < ap.X or x > ap.X + as.X or y < ap.Y or y > ap.Y + as.Y then return end
-    -- И не задевая кнопки (R6, ⌨, крестик)
-    if IsOverButtonOrTextbox(x, y) then return end
+
+    -- Двигать можно ТОЛЬКО за сам текст названия
+    local dragTarget = TopBarText.Visible and TopBarText or (MiniText.Visible and MiniText or nil)
+    if not dragTarget then return end
+
+    -- Жёстко ограничиваем зону по высоте верхней панели, чтобы не залезать на скролл-меню
+    local tbAP = TopBarFrame.AbsolutePosition
+    local tbAS = TopBarFrame.AbsoluteSize
+    if y < tbAP.Y or y > tbAP.Y + tbAS.Y then return end
+
+    local ap = dragTarget.AbsolutePosition
+    local as = dragTarget.AbsoluteSize
+    local pad = 6
+    if x < ap.X - pad or x > ap.X + as.X + pad then return end
+    -- И по вертикали тоже не выходим за пределы текста (только внутри верхней панели)
+    if y < ap.Y - pad or y > ap.Y + as.Y + pad then return end
 
     local screen = workspace.CurrentCamera.ViewportSize
     local ch = Vector2.new(x, y) / screen
