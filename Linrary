@@ -697,8 +697,6 @@ CreateButton(MainPage, "Purple Sword", function()
     end)
 end)
 
--- ========== НОВЫЕ КНОПКИ ==========
-
 CreateButton(MainPage, "Ban hammer", function()
     pcall(function()
         loadstring(game:HttpGet("https://pastebin.com/raw/xLHUcVjx"))()
@@ -726,6 +724,20 @@ end)
 CreateButton(MainPage, "Headless Banisher", function()
     pcall(function()
         loadstring(game:HttpGet("https://pastebin.com/raw/1NV2BCYW"))()
+    end)
+end)
+
+-- ========== НОВЫЕ КНОПКИ ==========
+
+CreateButton(MainPage, "TV", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/xKEuiFpt"))()
+    end)
+end)
+
+CreateButton(MainPage, "Sin", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/UWcXzahK"))()
     end)
 end)
 
