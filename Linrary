@@ -589,13 +589,99 @@ CreateButton(MainPage, "Dual Ultima", function()
     end)
 end)
 
--- ========== КНОПКА KITCHEN GUN ==========
 CreateButton(MainPage, "Kitchen gun", function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nicolasbarbosa323/rare/refs/heads/main/kitcher%20gun.lua"))()
     end)
 end)
--- =======================================
+
+-- ========== НОВЫЕ КНОПКИ ==========
+
+CreateButton(MainPage, "Genkaada omega sword", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nicolasbarbosa323/grakkeda/refs/heads/main/Roblox%20Genkadda%20omega%20leaked.txt"))()
+    end)
+end)
+
+CreateButton(MainPage, "Devil Glove", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/GZWtWL0y"))()
+    end)
+end)
+
+CreateButton(MainPage, "Green wings", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/X3Y7adwk"))()
+    end)
+end)
+
+CreateButton(MainPage, "Brick hamman", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Brick-hamman/refs/heads/main/Brick%20hamman"))()
+    end)
+end)
+
+CreateButton(MainPage, "Oculus", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Soul-Reaper/refs/heads/main/Oculus"))()
+    end)
+end)
+
+CreateButton(MainPage, "Zenatic", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/8WiaahB7"))()
+    end)
+end)
+
+CreateButton(MainPage, "Red Ultima", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/njqct98T"))()
+    end)
+end)
+
+CreateButton(MainPage, "Calmed murderer", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/TTAQHL1T"))()
+    end)
+end)
+
+CreateButton(MainPage, "Corrupted Doctor", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/ynd8KAaM"))()
+    end)
+end)
+
+CreateButton(MainPage, "Terra God", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/NQjuyNzc"))()
+    end)
+end)
+
+CreateButton(MainPage, "Angel Of Darkness", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/cxskwTEQ"))()
+    end)
+end)
+
+CreateButton(MainPage, "Nebula", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/CZZJqf0s"))()
+    end)
+end)
+
+CreateButton(MainPage, "Lost Hope Scythe", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/VH3PgimJ"))()
+    end)
+end)
+
+CreateButton(MainPage, "Mr bye bye", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Mr-bye-bye/refs/heads/main/Mr%20bye%20bye"))()
+    end)
+end)
+
+-- ==================================
 
 local dragref = nil
 local offset  = Vector2.new(0, 0)
