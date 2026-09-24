@@ -697,12 +697,6 @@ CreateButton(MainPage, "Cleetus", function()
     end)
 end)
 
-CreateButton(MainPage, "Blue Sickle", function()
-    pcall(function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/Yk5xGGyD"))()
-    end)
-end)
-
 CreateButton(MainPage, "Purple Sword", function()
     pcall(function()
         loadstring(game:HttpGet("https://pastebin.com/raw/kC0DdRS7"))()
@@ -741,9 +735,11 @@ local function StartDrag(input)
     and input.UserInputType ~= Enum.UserInputType.Touch then return end
 
     local x, y = input.Position.X, input.Position.Y
-    local ap = UIMainWindow.AbsolutePosition
-    local as = UIMainWindow.AbsoluteSize
+    -- Двигать можно ТОЛЬКО за верхнюю панель (TopBarFrame)
+    local ap = TopBarFrame.AbsolutePosition
+    local as = TopBarFrame.AbsoluteSize
     if x < ap.X or x > ap.X + as.X or y < ap.Y or y > ap.Y + as.Y then return end
+    -- И не задевая кнопки (R6, ⌨, крестик)
     if IsOverButtonOrTextbox(x, y) then return end
 
     local screen = workspace.CurrentCamera.ViewportSize
