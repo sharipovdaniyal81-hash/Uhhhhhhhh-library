@@ -523,12 +523,6 @@ CreateButton(MainPage, "Shrike", function()
     end)
 end)
 
-CreateButton(MainPage, "Killbot V2", function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/KillbotV2"))()
-    end)
-end)
-
 CreateButton(MainPage, "Split", function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Split-head-/refs/heads/main/Split%20head"))()
@@ -702,6 +696,40 @@ CreateButton(MainPage, "Purple Sword", function()
         loadstring(game:HttpGet("https://pastebin.com/raw/kC0DdRS7"))()
     end)
 end)
+
+-- ========== НОВЫЕ КНОПКИ ==========
+
+CreateButton(MainPage, "Ban hammer", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/xLHUcVjx"))()
+    end)
+end)
+
+CreateButton(MainPage, "Killbot", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/8spCXuEU"))()
+    end)
+end)
+
+CreateButton(MainPage, "Guardian Of Light", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/EHEPg3gN"))()
+    end)
+end)
+
+CreateButton(MainPage, "Chaos", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/wBTtDxQh"))()
+    end)
+end)
+
+CreateButton(MainPage, "Headless Banisher", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/1NV2BCYW"))()
+    end)
+end)
+
+-- ================================
 
 local dragref = nil
 local offset  = Vector2.new(0, 0)
