@@ -365,7 +365,8 @@ TopBarClose.Activated:Connect(function()
     MainWindowClosed = not MainWindowClosed
 
     if MainWindowClosed then
-        local targetSize = Vector2.new(170, 30)
+        -- Ширина свёрнутой панели: 220 (чуть длиннее, чем было 170)
+        local targetSize = Vector2.new(220, 30)
         local viewport = workspace.CurrentCamera.ViewportSize
         if viewport.X > 0 and viewport.Y > 0 then
             local halfX = (targetSize.X / 2) / viewport.X
@@ -382,7 +383,7 @@ TopBarClose.Activated:Connect(function()
         end
 
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(170, 30)
+            Size = UDim2.fromOffset(220, 30)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 180
@@ -708,11 +709,9 @@ local function StartDrag(input)
 
     local x, y = input.Position.X, input.Position.Y
 
-    -- Двигать можно ТОЛЬКО за сам текст названия
     local dragTarget = TopBarText.Visible and TopBarText or (MiniText.Visible and MiniText or nil)
     if not dragTarget then return end
 
-    -- Жёстко ограничиваем зону по высоте верхней панели, чтобы не залезать на скролл-меню
     local tbAP = TopBarFrame.AbsolutePosition
     local tbAS = TopBarFrame.AbsoluteSize
     if y < tbAP.Y or y > tbAP.Y + tbAS.Y then return end
@@ -721,7 +720,6 @@ local function StartDrag(input)
     local as = dragTarget.AbsoluteSize
     local pad = 6
     if x < ap.X - pad or x > ap.X + as.X + pad then return end
-    -- И по вертикали тоже не выходим за пределы текста (только внутри верхней панели)
     if y < ap.Y - pad or y > ap.Y + as.Y + pad then return end
 
     local screen = workspace.CurrentCamera.ViewportSize
