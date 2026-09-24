@@ -243,7 +243,7 @@ RegisterTextLabel(TopBarText)
 local MiniText = Util.Instance("TextLabel", TopBarFrame)
 MiniText.AnchorPoint = Vector2.new(0, 0.5)
 MiniText.Position = UDim2.new(0, 8, 0.5, 0)
-MiniText.Size = UDim2.new(0, 80, 1, 0)
+MiniText.Size = UDim2.new(0, 110, 1, 0)
 MiniText.BackgroundTransparency = 1
 MiniText.Font = Enum.Font.Code
 MiniText.TextSize = 20
@@ -365,8 +365,12 @@ TopBarClose.Activated:Connect(function()
     MainWindowClosed = not MainWindowClosed
 
     if MainWindowClosed then
-        -- Ширина свёрнутой панели: 205 (чуть уже чем 220, кнопки дальше друг от друга)
-        local targetSize = Vector2.new(205, 30)
+        -- Скрываем кнопки R6 и клавиатуры при сворачивании
+        R6Button.Visible = false
+        KeyboardButton.Visible = false
+
+        -- Узкая панель: только "Uhhhhhh" + место справа для крестика
+        local targetSize = Vector2.new(155, 30)
         local viewport = workspace.CurrentCamera.ViewportSize
         if viewport.X > 0 and viewport.Y > 0 then
             local halfX = (targetSize.X / 2) / viewport.X
@@ -383,7 +387,7 @@ TopBarClose.Activated:Connect(function()
         end
 
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(205, 30)
+            Size = UDim2.fromOffset(155, 30)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 180
@@ -398,6 +402,10 @@ TopBarClose.Activated:Connect(function()
             MainWindowTweening = false
         end)
     else
+        -- Возвращаем кнопки обратно при разворачивании
+        R6Button.Visible = true
+        KeyboardButton.Visible = true
+
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Position = UDim2.new(0.5, 0, 0.5, 0)
         }):Play()
