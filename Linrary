@@ -243,7 +243,7 @@ RegisterTextLabel(TopBarText)
 local MiniText = Util.Instance("TextLabel", TopBarFrame)
 MiniText.AnchorPoint = Vector2.new(0, 0.5)
 MiniText.Position = UDim2.new(0, 8, 0.5, 0)
-MiniText.Size = UDim2.new(0, 110, 1, 0)
+MiniText.Size = UDim2.new(0, 90, 1, 0)
 MiniText.BackgroundTransparency = 1
 MiniText.Font = Enum.Font.Code
 MiniText.TextSize = 20
@@ -282,7 +282,7 @@ AttachClickSound(TopBarClose)
 
 local R6Button = Util.Instance("TextButton", TopBarFrame)
 R6Button.AnchorPoint = Vector2.new(1, 0.5)
-R6Button.Position = UDim2.new(1, -34, 0.5, 0)
+R6Button.Position = UDim2.new(1, -32, 0.5, 0)
 R6Button.Size = UDim2.new(0, 30, 0, 24)
 R6Button.BackgroundColor3 = Color3.new(1, 1, 1)
 R6Button.BorderSizePixel = 0
@@ -310,7 +310,7 @@ end)
 -- ========== КНОПКА KEYBOARD (⌨) ==========
 local KeyboardButton = Util.Instance("TextButton", TopBarFrame)
 KeyboardButton.AnchorPoint = Vector2.new(1, 0.5)
-KeyboardButton.Position = UDim2.new(1, -76, 0.5, 0)
+KeyboardButton.Position = UDim2.new(1, -66, 0.5, 0)
 KeyboardButton.Size = UDim2.new(0, 30, 0, 24)
 KeyboardButton.BackgroundColor3 = Color3.new(1, 1, 1)
 KeyboardButton.BorderSizePixel = 0
@@ -369,8 +369,8 @@ TopBarClose.Activated:Connect(function()
         R6Button.Visible = false
         KeyboardButton.Visible = false
 
-        -- Узкая панель: только "Uhhhhhh" + место справа для крестика
-        local targetSize = Vector2.new(155, 30)
+        -- Узкая свёрнутая панель: только "Uhhhhhh" + крестик
+        local targetSize = Vector2.new(130, 30)
         local viewport = workspace.CurrentCamera.ViewportSize
         if viewport.X > 0 and viewport.Y > 0 then
             local halfX = (targetSize.X / 2) / viewport.X
@@ -387,7 +387,7 @@ TopBarClose.Activated:Connect(function()
         end
 
         TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(155, 30)
+            Size = UDim2.fromOffset(130, 30)
         }):Play()
         TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
             Rotation = 180
