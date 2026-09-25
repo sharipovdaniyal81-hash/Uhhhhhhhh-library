@@ -1,4 +1,4 @@
--- Uhhhhhhh Library — Rayfield Gen2 template
+-- Uhhhhhhh Library — Rayfield Gen2 (stable build)
 -- All buttons and links migrated 1:1 from the manual GUI.
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/gen2"))()
@@ -15,9 +15,9 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- ===== Tabs =====
-local MorphsTab = Window:CreateTab({ name = "Morphs" })
-local MiscTab   = Window:CreateTab({ name = "Misc" })
-local InfoTab   = Window:CreateTab({ name = "Info" })
+local MorphsTab = Window:CreateTab({ name = "Morphs", icon = 4483362458 })
+local MiscTab   = Window:CreateTab({ name = "Misc",   icon = 4483362458 })
+local InfoTab   = Window:CreateTab({ name = "Info",   icon = 4483362458 })
 
 -- ===== Helper =====
 local function load(url)
@@ -33,6 +33,7 @@ MiscTab:CreateButton({
     name = "R6",
     callback = function()
         load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/R6/refs/heads/main/R6")
+        Window:Notify({ title = "R6", content = "R6 loader started." })
     end,
 })
 
@@ -40,6 +41,7 @@ MiscTab:CreateButton({
     name = "Keyboard ⌨",
     callback = function()
         load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/keyboard/refs/heads/main/Hmmph%20keyboard%3F%3F%3F")
+        Window:Notify({ title = "Keyboard", content = "On-screen keyboard loaded." })
     end,
 })
 
@@ -401,3 +403,6 @@ InfoTab:CreateParagraph({
     title = "Misc",
     content = "R6 — loads the R6 rig loader.\nKeyboard — on-screen keyboard for mobile devices."
 })
+
+-- ===== Load config =====
+Rayfield:LoadConfiguration()
