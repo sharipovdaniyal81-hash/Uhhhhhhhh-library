@@ -307,7 +307,6 @@ R6Button.MouseButton1Click:Connect(function()
     end)
 end)
 
--- ========== КНОПКА KEYBOARD (⌨) ==========
 local KeyboardButton = Util.Instance("TextButton", TopBarFrame)
 KeyboardButton.AnchorPoint = Vector2.new(1, 0.5)
 KeyboardButton.Position = UDim2.new(1, -65, 0.5, 0)
@@ -334,7 +333,6 @@ KeyboardButton.MouseButton1Click:Connect(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/keyboard/refs/heads/main/Hmmph%20keyboard%3F%3F%3F"))()
     end)
 end)
--- =========================================
 
 local WindowContent = Util.Instance("Frame", UIMainWindow)
 WindowContent.Position = UDim2.new(0, 0, 0, 30)
@@ -342,7 +340,6 @@ WindowContent.Size = UDim2.new(1, 0, 1, -35)
 WindowContent.BackgroundTransparency = 1
 WindowContent.ClipsDescendants = true
 
--- ========== ОГРАНИЧЕНИЕ ПОЛОЖЕНИЯ В ПРЕДЕЛАХ ЭКРАНА ==========
 local ClampPositionToScreen = function(pos)
     local viewport = workspace.CurrentCamera.ViewportSize
     if viewport.X <= 0 or viewport.Y <= 0 then return pos end
@@ -355,7 +352,6 @@ local ClampPositionToScreen = function(pos)
         math.clamp(pos.Y, halfY, 1 - halfY)
     )
 end
--- =============================================================
 
 local MainWindowClosed = false
 local MainWindowTweening = false
@@ -742,6 +738,42 @@ end)
 CreateButton(MainPage, "Archangel", function()
     pcall(function()
         loadstring(game:HttpGet("https://pastebin.com/raw/B7M3jpVg"))()
+    end)
+end)
+
+CreateButton(MainPage, "Soul Reaper", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/tcL2Ks37"))()
+    end)
+end)
+
+CreateButton(MainPage, "Blind Reaper", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Blind-Reaper-/refs/heads/main/Blind%20reaper"))()
+    end)
+end)
+
+CreateButton(MainPage, "Sledge Hammer", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/White-Wings/refs/heads/main/Hammer"))()
+    end)
+end)
+
+CreateButton(MainPage, "Starlight", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/White-Wings/refs/heads/main/Starlight"))()
+    end)
+end)
+
+CreateButton(MainPage, "The sun - is a deadly laser", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/y073ged5"))()
+    end)
+end)
+
+CreateButton(MainPage, "Polygoner", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Polygoner-/refs/heads/main/Polygoner"))()
     end)
 end)
 
