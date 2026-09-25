@@ -1,0 +1,403 @@
+-- Uhhhhhhh Library — Rayfield Gen2 template
+-- All buttons and links migrated 1:1 from the manual GUI.
+
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/gen2"))()
+
+local Window = Rayfield:CreateWindow({
+    name = "Uhhhhhhh Library",
+    subtitle = "Modded — by Uhhhhhh",
+    sidebarLayout = true,
+    configuration = {
+        autoSave = true,
+        autoLoad = true,
+        fileName = "UhhhhhhhLibrary",
+    },
+})
+
+-- ===== Tabs =====
+local MorphsTab = Window:CreateTab({ name = "Morphs" })
+local MiscTab   = Window:CreateTab({ name = "Misc" })
+local InfoTab   = Window:CreateTab({ name = "Info" })
+
+-- ===== Helper =====
+local function load(url)
+    pcall(function()
+        loadstring(game:HttpGet(url))()
+    end)
+end
+
+-- ============================================================
+-- ===== Misc =====
+-- ============================================================
+MiscTab:CreateButton({
+    name = "R6",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/R6/refs/heads/main/R6")
+    end,
+})
+
+MiscTab:CreateButton({
+    name = "Keyboard ⌨",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/keyboard/refs/heads/main/Hmmph%20keyboard%3F%3F%3F")
+    end,
+})
+
+-- ============================================================
+-- ===== Morphs =====
+-- ============================================================
+MorphsTab:CreateButton({
+    name = "Chronos Sentinel",
+    callback = function()
+        load("https://raw.githubusercontent.com/Lock1213/Scripts/refs/heads/main/Chrono%20Sentinel%20(Converted%20With%20Music)")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "All Seeing Hand",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/All-Seeing-Hand-/refs/heads/main/Hand")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Goner",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Goner/refs/heads/main/Goner")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Lunatic",
+    callback = function()
+        load("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/lunatic")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Shrike",
+    callback = function()
+        load("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/Shrike")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Split",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Split-head-/refs/heads/main/Split%20head")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Sans",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Sans/refs/heads/main/Sans")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Road Rogue",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Road-Rogue/refs/heads/main/Road%20Rogue")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Black Figure",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Black-Figure-/refs/heads/main/Black")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Refulgence",
+    callback = function()
+        load("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/light")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Neptunian V",
+    callback = function()
+        load("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/NepV")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Reflux",
+    callback = function()
+        load("https://pastebin.com/raw/YZhbRq5w")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Good cop bad cop",
+    callback = function()
+        load("https://pastebin.com/raw/Nu17yK8P")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Banisher v3",
+    callback = function()
+        load("https://pastebin.com/raw/VYeQBBpa")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Banisher v8",
+    callback = function()
+        load("https://pastebin.com/raw/nHN5eMQx")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Burning Hope",
+    callback = function()
+        load("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/Burning%20Hope")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Dual Ultima",
+    callback = function()
+        load("https://pastebin.com/raw/3QsB07Ba")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Kitchen gun",
+    callback = function()
+        load("https://raw.githubusercontent.com/nicolasbarbosa323/rare/refs/heads/main/kitcher%20gun.lua")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Genkaada omega sword",
+    callback = function()
+        load("https://raw.githubusercontent.com/nicolasbarbosa323/grakkeda/refs/heads/main/Roblox%20Genkadda%20omega%20leaked.txt")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Devil Glove",
+    callback = function()
+        load("https://pastebin.com/raw/GZWtWL0y")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Green wings",
+    callback = function()
+        load("https://pastebin.com/raw/X3Y7adwk")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Brick hamman",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Brick-hamman/refs/heads/main/Brick%20hamman")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Oculus",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Soul-Reaper/refs/heads/main/Oculus")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Zenatic",
+    callback = function()
+        load("https://pastebin.com/raw/8WiaahB7")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Red Ultima",
+    callback = function()
+        load("https://pastebin.com/raw/njqct98T")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Calmed murderer",
+    callback = function()
+        load("https://pastebin.com/raw/TTAQHL1T")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Corrupted Doctor",
+    callback = function()
+        load("https://pastebin.com/raw/ynd8KAaM")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Terra God",
+    callback = function()
+        load("https://pastebin.com/raw/NQjuyNzc")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Angel Of Darkness",
+    callback = function()
+        load("https://pastebin.com/raw/cxskwTEQ")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Lost Hope Scythe",
+    callback = function()
+        load("https://pastebin.com/raw/UYM7Lx4n")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Mr bye bye",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Mr-bye-bye/refs/heads/main/Mr%20bye%20bye")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "White Sickle",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Sickle/refs/heads/main/White%20Sickle%20l")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Cleetus",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Cleetus/refs/heads/main/Cleetus")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Purple Sword",
+    callback = function()
+        load("https://pastebin.com/raw/kC0DdRS7")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Ban hammer",
+    callback = function()
+        load("https://pastebin.com/raw/xLHUcVjx")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Killbot",
+    callback = function()
+        load("https://pastebin.com/raw/8spCXuEU")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Guardian Of Light",
+    callback = function()
+        load("https://pastebin.com/raw/EHEPg3gN")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Chaos",
+    callback = function()
+        load("https://pastebin.com/raw/wBTtDxQh")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Headless Banisher",
+    callback = function()
+        load("https://pastebin.com/raw/1NV2BCYW")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "TV",
+    callback = function()
+        load("https://pastebin.com/raw/xKEuiFpt")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Sin",
+    callback = function()
+        load("https://pastebin.com/raw/UWcXzahK")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Archangel",
+    callback = function()
+        load("https://pastebin.com/raw/B7M3jpVg")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Soul Reaper",
+    callback = function()
+        load("https://pastebin.com/raw/tcL2Ks37")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Blind Reaper",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Blind-Reaper-/refs/heads/main/Blind%20reaper")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Sledge Hammer",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/White-Wings/refs/heads/main/Hammer")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Starlight",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/White-Wings/refs/heads/main/Starlight")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "The sun - is a deadly laser",
+    callback = function()
+        load("https://pastebin.com/raw/y073ged5")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Polygoner",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Polygoner-/refs/heads/main/Polygoner")
+    end,
+})
+
+MorphsTab:CreateButton({
+    name = "Server admin",
+    callback = function()
+        load("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Internal-war-/refs/heads/main/Server%20admin")
+    end,
+})
+
+-- ============================================================
+-- ===== Info =====
+-- ============================================================
+InfoTab:CreateParagraph({
+    title = "Uhhhhhhh Library",
+    content = "Modded script hub. Click any button to load a script. All scripts are fetched via HttpGet from their original sources."
+})
+
+InfoTab:CreateParagraph({
+    title = "Misc",
+    content = "R6 — loads the R6 rig loader.\nKeyboard — on-screen keyboard for mobile devices."
+})
