@@ -45,7 +45,7 @@ local GetUIColor   = function(t) return Util.LoopedHSV(t / 10, 0.8, 1) end
 local GetUIBGColor = function(t) return Color3.new(0, 0, 0) end
 
 local StylizedObjs = {}
-local GlowObjs = {}
+local GlowLayers = {}
 local function Stylize(obj, options)
     options = options or {}
     Util.Instance("UICorner", obj).CornerRadius = UDim.new(0, 5)
@@ -58,13 +58,24 @@ local function Stylize(obj, options)
     obj.BorderSizePixel  = 0
 
     if options.Glow then
-        local GlowOut = Util.Instance("UIStroke", obj)
-        GlowOut.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        GlowOut.Color           = Color3.new(1, 1, 1)
-        GlowOut.LineJoinMode    = Enum.LineJoinMode.Round
-        GlowOut.Thickness       = 7
-        GlowOut.Transparency    = 0.7
-        table.insert(GlowObjs, GlowOut)
+        local layers = {}
+        local configs = {
+            {thickness = 3,  transparency = 0.65},
+            {thickness = 6,  transparency = 0.8},
+            {thickness = 10, transparency = 0.88},
+            {thickness = 15, transparency = 0.93},
+            {thickness = 22, transparency = 0.96},
+        }
+        for _, cfg in ipairs(configs) do
+            local g = Util.Instance("UIStroke", obj)
+            g.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            g.Color           = Color3.new(1, 1, 1)
+            g.LineJoinMode    = Enum.LineJoinMode.Round
+            g.Thickness       = cfg.thickness
+            g.Transparency    = cfg.transparency
+            table.insert(layers, {stroke = g, baseThickness = cfg.thickness, baseTransparency = cfg.transparency})
+        end
+        table.insert(GlowLayers, {obj = obj, layers = layers})
     end
 
     table.insert(StylizedObjs, {obj = obj, Out = Out, options = options})
@@ -958,11 +969,16 @@ RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Valu
         end
     end
 
-    for _, glow in ipairs(GlowObjs) do
-        if glow.Parent then
-            glow.Color = c
-            glow.Transparency = 0.65 + math.sin(t * 4) * 0.1
-            glow.Thickness = 7 + math.sin(t * 3) * 1.5
+    for _, entry in ipairs(GlowLayers) do
+        if entry.obj.Parent then
+            local pulse = 1 + math.sin(t * 3) * 0.05
+            for _, layer in ipairs(entry.layers) do
+                if layer.stroke.Parent then
+                    layer.stroke.Color = c
+                    layer.stroke.Thickness = layer.baseThickness * pulse
+                    layer.stroke.Transparency = layer.baseTransparency + math.sin(t * 4) * 0.03
+                end
+            end
         end
     end
 
