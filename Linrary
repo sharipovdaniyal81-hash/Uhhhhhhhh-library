@@ -44,8 +44,8 @@ UIMainFrame.ZIndex = 2147483647
 local GetUIColor   = function(t) return Util.LoopedHSV(t / 10, 0.8, 1) end
 local GetUIBGColor = function(t) return Color3.new(0, 0, 0) end
 
-local GLOW_LAYERS_COUNT = 40
-local GLOW_MAX_THICKNESS = 45
+local GLOW_LAYERS_COUNT = 25
+local GLOW_MAX_THICKNESS = 22
 
 local StylizedObjs = {}
 local GlowLayers = {}
@@ -64,8 +64,8 @@ local function Stylize(obj, options)
         local layers = {}
         for i = 1, GLOW_LAYERS_COUNT do
             local k = i / GLOW_LAYERS_COUNT
-            local thickness = 1 + GLOW_MAX_THICKNESS * (k ^ 1.8)
-            local transparency = 0.35 + 0.63 * (k ^ 0.75)
+            local thickness = 1 + GLOW_MAX_THICKNESS * (k ^ 1.6)
+            local transparency = 0.55 + 0.40 * (k ^ 0.8)
             local g = Util.Instance("UIStroke", obj)
             g.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             g.Color           = Color3.new(1, 1, 1)
