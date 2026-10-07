@@ -822,12 +822,6 @@ CreateButton(MainPage, "Dead eye", function()
     end)
 end)
 
-CreateButton(MainPage, "Noob Switcher v5", function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Noob-switcher/refs/heads/main/Noob%20switcher%20v5"))()
-    end)
-end)
-
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
