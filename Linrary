@@ -45,6 +45,7 @@ local GetUIColor   = function(t) return Util.LoopedHSV(t / 10, 0.8, 1) end
 local GetUIBGColor = function(t) return Color3.new(0, 0, 0) end
 
 local StylizedObjs = {}
+local GlowObjs = {}
 local function Stylize(obj, options)
     options = options or {}
     Util.Instance("UICorner", obj).CornerRadius = UDim.new(0, 5)
@@ -55,6 +56,17 @@ local function Stylize(obj, options)
     Out.Thickness       = 1
     obj.BackgroundColor3 = Color3.new(0, 0, 0)
     obj.BorderSizePixel  = 0
+
+    if options.Glow then
+        local GlowOut = Util.Instance("UIStroke", obj)
+        GlowOut.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        GlowOut.Color           = Color3.new(1, 1, 1)
+        GlowOut.LineJoinMode    = Enum.LineJoinMode.Round
+        GlowOut.Thickness       = 7
+        GlowOut.Transparency    = 0.7
+        table.insert(GlowObjs, GlowOut)
+    end
+
     table.insert(StylizedObjs, {obj = obj, Out = Out, options = options})
 end
 
@@ -795,6 +807,12 @@ CreateButton(MainPage, "Dead eye", function()
     end)
 end)
 
+CreateButton(MainPage, "Noob Switcher v5", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/Noob-switcher/refs/heads/main/Noob%20switcher%20v5"))()
+    end)
+end)
+
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
@@ -937,6 +955,14 @@ RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Valu
         if obj.Parent then
             Out.Color = c
             obj.BackgroundColor3 = GetUIBGColor(t)
+        end
+    end
+
+    for _, glow in ipairs(GlowObjs) do
+        if glow.Parent then
+            glow.Color = c
+            glow.Transparency = 0.65 + math.sin(t * 4) * 0.1
+            glow.Thickness = 7 + math.sin(t * 3) * 1.5
         end
     end
 
