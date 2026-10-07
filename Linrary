@@ -44,6 +44,9 @@ UIMainFrame.ZIndex = 2147483647
 local GetUIColor   = function(t) return Util.LoopedHSV(t / 10, 0.8, 1) end
 local GetUIBGColor = function(t) return Color3.new(0, 0, 0) end
 
+local GLOW_LAYERS_COUNT = 40
+local GLOW_MAX_THICKNESS = 45
+
 local StylizedObjs = {}
 local GlowLayers = {}
 local function Stylize(obj, options)
@@ -59,21 +62,22 @@ local function Stylize(obj, options)
 
     if options.Glow then
         local layers = {}
-        local configs = {
-            {thickness = 3,  transparency = 0.65},
-            {thickness = 6,  transparency = 0.8},
-            {thickness = 10, transparency = 0.88},
-            {thickness = 15, transparency = 0.93},
-            {thickness = 22, transparency = 0.96},
-        }
-        for _, cfg in ipairs(configs) do
+        for i = 1, GLOW_LAYERS_COUNT do
+            local k = i / GLOW_LAYERS_COUNT
+            local thickness = 1 + GLOW_MAX_THICKNESS * (k ^ 1.8)
+            local transparency = 0.35 + 0.63 * (k ^ 0.75)
             local g = Util.Instance("UIStroke", obj)
             g.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             g.Color           = Color3.new(1, 1, 1)
             g.LineJoinMode    = Enum.LineJoinMode.Round
-            g.Thickness       = cfg.thickness
-            g.Transparency    = cfg.transparency
-            table.insert(layers, {stroke = g, baseThickness = cfg.thickness, baseTransparency = cfg.transparency})
+            g.Thickness       = thickness
+            g.Transparency    = transparency
+            table.insert(layers, {
+                stroke = g,
+                baseThickness = thickness,
+                baseTransparency = transparency,
+                offset = k,
+            })
         end
         table.insert(GlowLayers, {obj = obj, layers = layers})
     end
@@ -969,14 +973,13 @@ RunService:BindToRenderStep("Uhhhhhh_PanelRender", Enum.RenderPriority.Last.Valu
         end
     end
 
+    local pulse = 1 + math.sin(t * 3) * 0.05
     for _, entry in ipairs(GlowLayers) do
         if entry.obj.Parent then
-            local pulse = 1 + math.sin(t * 3) * 0.05
             for _, layer in ipairs(entry.layers) do
                 if layer.stroke.Parent then
                     layer.stroke.Color = c
                     layer.stroke.Thickness = layer.baseThickness * pulse
-                    layer.stroke.Transparency = layer.baseTransparency + math.sin(t * 4) * 0.03
                 end
             end
         end
