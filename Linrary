@@ -138,62 +138,21 @@ local function IsOurGui(obj)
     return false
 end
 
-local function GetTopGui(inst)
-    local top = inst
-    while top and top.Parent and top.Parent ~= PlayerGui and top.Parent ~= CoreGui and top.Parent ~= game do
-        top = top.Parent
-    end
-    return top
-end
-
-local function LooksLikeNotification(gui)
-    if not gui or not gui.Parent then return false end
-    if not gui:IsA("ScreenGui") then return false end
-    if IsOurGui(gui) then return false end
-    if gui.Name == "UhhhhhhhLibrary" then return false end
-
-    local descs = gui:GetDescendants()
-
-    if #descs > 45 then
-        return false
-    end
-
-    local hasText = false
-    for _, d in ipairs(descs) do
-        if d:IsA("TextLabel") or d:IsA("TextButton") or d:IsA("TextBox") then
-            hasText = true
-            break
-        end
-    end
-
-    if not hasText then return false end
-
-    local frameCount = 0
-    local textCount  = 0
-    for _, d in ipairs(descs) do
-        if d:IsA("Frame") then frameCount = frameCount + 1 end
-        if d:IsA("TextLabel") or d:IsA("TextButton") or d:IsA("TextBox") then
-            textCount = textCount + 1
-        end
-    end
-
-    if textCount >= 1 and textCount <= 10 and frameCount <= 25 then
-        return true
-    end
-
-    return false
-end
-
 local KILL_KEYWORDS = {
-    "convert", "converted", "creck", "cracked", "crack by",
+    "converted", "convert by", "converted by", "converted from",
+    "creck", "cracked by", "cracked",
     "made by", "madeby", "creator", "author",
-    "credits", "credit", "watermark", "splash",
+    "credits", "watermark", "splash",
     "join discord", "discord.gg", "discord.com",
     "youtube.com", "subscribe", "youtu.be",
-    "thanks for using", "thank you for using",
     "edited by", "leaked by", "script by", "scripted by",
-    "signed by", "reuploaded", "loaded with", "pro v",
-    "animator", "ban_notification", "ban_thid", "lms:",
+    "signed by", "reuploaded",
+    "animator6d", "animator", "loaded with", "local cache",
+    "cache support", "pro v", "hud loaded", "loaded successfully",
+    "ban_notification", "ban_thid", "ban thid",
+    "not for sale", "reselling", "resell",
+    "premium version", "private version", "paid version",
+    "t.me/", "telegram", "tiktok.com", "dsc.gg",
 }
 
 local function ContainsKeyword(text)
@@ -205,95 +164,81 @@ local function ContainsKeyword(text)
     return false
 end
 
-local KillNotifications
-KillNotifications = function(duration)
-    duration = duration or 12
-    local startTime = tick()
-    local initialSet = {}
-
-    for _, g in ipairs(PlayerGui:GetChildren()) do
-        initialSet[g] = true
+local function GetTopGui(inst)
+    local top = inst
+    while top and top.Parent and top.Parent ~= PlayerGui and top.Parent ~= CoreGui and top.Parent ~= game do
+        top = top.Parent
     end
-    for _, g in ipairs(CoreGui:GetChildren()) do
-        initialSet[g] = true
-    end
+    return top
+end
 
-    local function TryKill(gui)
-        if not gui or not gui.Parent then return false end
-        if IsOurGui(gui) then return false end
-        if LooksLikeNotification(gui) then
-            pcall(function() gui:Destroy() end)
-            return true
+local function HandleAdded(desc)
+    if not desc or not desc.Parent then return end
+    if IsOurGui(desc) then return end
+    if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
+        if ContainsKeyword(desc.Text) then
+            local parent = desc.Parent
+            pcall(function()
+                desc.Text = ""
+                desc.Visible = false
+            end)
+            if parent and (parent:IsA("Frame") or parent:IsA("GuiObject")) then
+                local descs = parent:GetDescendants()
+                if #descs <= 10 then
+                    pcall(function() parent.Visible = false end)
+                end
+            end
         end
-        return false
     end
+end
 
-    task.spawn(function()
-        while tick() - startTime < duration do
-            task.wait(0.08)
-
-            for _, g in ipairs(PlayerGui:GetChildren()) do
-                if not initialSet[g] then
-                    TryKill(g)
-                end
-            end
-
-            for _, g in ipairs(CoreGui:GetChildren()) do
-                if not initialSet[g] then
-                    TryKill(g)
-                end
-            end
-
-            for _, root in ipairs({PlayerGui, CoreGui}) do
-                for _, g in ipairs(root:GetChildren()) do
-                    if not IsOurGui(g) and g:IsA("ScreenGui") then
-                        for _, sub in ipairs(g:GetDescendants()) do
-                            if sub:IsA("TextLabel") or sub:IsA("TextButton") or sub:IsA("TextBox") then
-                                if ContainsKeyword(sub.Text) then
-                                    pcall(function() g:Destroy() end)
-                                    break
+local function SweepExisting()
+    for _, root in ipairs({PlayerGui, CoreGui}) do
+        pcall(function()
+            for _, child in ipairs(root:GetDescendants()) do
+                if not IsOurGui(child) then
+                    if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
+                        if ContainsKeyword(child.Text) then
+                            pcall(function()
+                                child.Text = ""
+                                child.Visible = false
+                            end)
+                            local parent = child.Parent
+                            if parent and parent:IsA("GuiObject") then
+                                local descs = parent:GetDescendants()
+                                if #descs <= 10 then
+                                    pcall(function() parent.Visible = false end)
                                 end
                             end
                         end
                     end
                 end
             end
-        end
-    end)
+        end)
+    end
+end
+
+local KillNotifications
+KillNotifications = function(duration)
+    duration = duration or 10
+    local startTime = tick()
 
     local conns = {}
-
-    table.insert(conns, PlayerGui.ChildAdded:Connect(function(g)
-        if tick() - startTime > duration then return end
-        task.defer(function()
-            task.wait(0.15)
-            TryKill(g)
-        end)
-    end))
-
-    table.insert(conns, CoreGui.ChildAdded:Connect(function(g)
-        if tick() - startTime > duration then return end
-        task.defer(function()
-            task.wait(0.15)
-            TryKill(g)
-        end)
-    end))
 
     table.insert(conns, game.DescendantAdded:Connect(function(desc)
         if tick() - startTime > duration then return end
         if IsOurGui(desc) then return end
         task.defer(function()
-            if not desc.Parent then return end
-            if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
-                if ContainsKeyword(desc.Text) then
-                    local top = GetTopGui(desc)
-                    if top and not IsOurGui(top) then
-                        pcall(function() top:Destroy() end)
-                    end
-                end
-            end
+            HandleAdded(desc)
         end)
     end))
+
+    task.spawn(function()
+        while tick() - startTime < duration do
+            task.wait(0.15)
+            SweepExisting()
+        end
+    end)
 
     task.delay(duration + 0.3, function()
         for _, c in ipairs(conns) do
@@ -705,7 +650,7 @@ local function CreateButton(parent, text, callback)
 
     if callback then
         Button.MouseButton1Click:Connect(function()
-            KillNotifications(12)
+            KillNotifications(10)
             task.spawn(callback)
         end)
     end
