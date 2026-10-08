@@ -840,12 +840,6 @@ CreateButton(MainPage, "The last God", function()
     end)
 end)
 
-CreateButton(MainPage, "Ashle", function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/sharipovdaniyal81-hash/White/refs/heads/main/Ashle"))()
-    end)
-end)
-
 CreateButton(MainPage, "Ultimate Dominus", function()
     pcall(function()
         loadstring(game:HttpGet("https://pastebin.com/raw/gBFyvYzQ"))()
