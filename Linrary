@@ -728,7 +728,7 @@ end)
 
 CreateButton(MainPage, "Killbot", function()
     pcall(function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/8spCXuEU"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/KillbotV2"))()
     end)
 end)
 
@@ -819,6 +819,18 @@ end)
 CreateButton(MainPage, "Dead eye", function()
     pcall(function()
         loadstring(game:HttpGet("https://pastebin.com/raw/Pu0qVEhM"))()
+    end)
+end)
+
+CreateButton(MainPage, "Gojo", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/GutMLF0i"))()
+    end)
+end)
+
+CreateButton(MainPage, "Sukuna", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/iW2Gg6Hh"))()
     end)
 end)
 
