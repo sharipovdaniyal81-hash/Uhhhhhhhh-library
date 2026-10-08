@@ -834,6 +834,18 @@ CreateButton(MainPage, "Sukuna", function()
     end)
 end)
 
+CreateButton(MainPage, "The last God", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/TLWkKzPH"))()
+    end)
+end)
+
+CreateButton(MainPage, "Ashle", function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ian49972/SCRIPTS/refs/heads/main/Ashle"))()
+    end)
+end)
+
 local dragref = nil
 local offset  = Vector2.new(0, 0)
 
